@@ -1,0 +1,91 @@
+# ============================================================
+# AutoPartsHub — .gitignore
+# .NET 8 + Angular 17 + Blazor Server
+# ============================================================
+
+# ---------- .NET ----------
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+*.log
+*.cache
+*.ncrunch*
+_NCrunch_*
+
+# Publicação
+publish/
+**/Properties/PublishProfiles/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+artifacts/
+
+# ---------- Segredos e configs locais ----------
+# NUNCA commitar — copiar de appsettings.Example.json
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+appsettings.Staging.json
+# Manter estes:
+!appsettings.json
+!appsettings.Example.json
+
+*.pfx
+*.p12
+secrets/
+**/*.env
+.env
+.env.local
+.env.*.local
+
+# ---------- Angular ----------
+node_modules/
+dist/
+.angular/
+.sass-cache/
+*.js.map
+npm-debug.log*
+yarn-error.log*
+
+# ---------- IDEs ----------
+# VS Code — manter extensions e tasks, ignorar pessoal
+.vscode/settings.json
+.vscode/launch.json
+# Commitar:
+!.vscode/extensions.json
+!.vscode/tasks.json
+
+# JetBrains
+.idea/
+*.iml
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# ---------- Docker ----------
+.dockerignore
+
+# ---------- Testes e cobertura ----------
+coverage/
+TestResults/
+*.trx
+*.coveragexml
+*.opencover.xml
+lcov.info
+
+# ---------- Ferramentas locais ----------
+.husky/_/

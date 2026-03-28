@@ -1,0 +1,28 @@
+{
+  "name": "hubpart",
+  "version": "1.0.0",
+  "description": "> SaaS B2B de cotação de peças automotivas em tempo real",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Valverdedev/hubpart.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Valverdedev/hubpart/issues"
+  },
+  "homepage": "https://github.com/Valverdedev/hubpart#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "husky": "^9.1.7"
+  }
+}
