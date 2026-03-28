@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AutoPartsHub.Application.Common;
 using AutoPartsHub.Domain.Entidades;
 using AutoPartsHub.Domain.Interfaces;
 using FluentResults;
@@ -21,7 +22,7 @@ namespace AutoPartsHub.Application.Auth.Commands;
 /// Renova o par JWT + refresh token a partir de um refresh token válido.
 /// Implementa rotação: o token antigo é invalidado e um novo é emitido.
 /// </summary>
-public record RefreshTokenCommand(string RefreshToken) : IRequest<Result<LoginResultadoDto>>;
+public record RefreshTokenCommand(string RefreshToken) : ICommand<LoginResultadoDto>;
 
 // ---------------------------------------------------------------------------
 // Validator
@@ -44,15 +45,16 @@ public sealed class RefreshTokenCommandValidator : AbstractValidator<RefreshToke
 public sealed class RefreshTokenCommandHandler(
     UserManager<UsuarioApp> userManager,
     IConfiguration configuracao,
-    IRefreshTokenRepository refreshTokenRepository
-) : IRequestHandler<RefreshTokenCommand, Result<LoginResultadoDto>>
+    IRefreshTokenRepository refreshTokenRepository,
+    IDateTimeProvider dateTime
+) : ICommandHandler<RefreshTokenCommand, LoginResultadoDto>
 {
     public async Task<Result<LoginResultadoDto>> Handle(RefreshTokenCommand command, CancellationToken ct)
     {
         // 1. Busca o refresh token (Global Query Filter aplica filtro por tenant automaticamente)
         var tokenExistente = await refreshTokenRepository.ObterPorTokenAsync(command.RefreshToken, ct);
 
-        if (tokenExistente is null || !tokenExistente.EstaValido)
+        if (tokenExistente is null || !tokenExistente.EstaValido(dateTime))
             return Result.Fail<LoginResultadoDto>("token_invalido");
 
         // 2. Localiza o usuário dono do token
@@ -66,7 +68,7 @@ public sealed class RefreshTokenCommandHandler(
             return Result.Fail<LoginResultadoDto>("token_invalido");
 
         // 4. Invalida o token antigo (rotação — one-time use)
-        tokenExistente.UsadoEm = DateTime.UtcNow;
+        tokenExistente.MarcarComoUsado(dateTime);
         await refreshTokenRepository.SalvarAlteracoesAsync(ct);
 
         // 5. Obtém roles atualizados
@@ -126,13 +128,7 @@ public sealed class RefreshTokenCommandHandler(
         var bytes = RandomNumberGenerator.GetBytes(32);
         var valorToken = Convert.ToBase64String(bytes);
 
-        var refreshToken = new RefreshToken
-        {
-            Token = valorToken,
-            UsuarioId = usuario.Id,
-            TenantId = usuario.TenantId,
-            ExpiraEm = DateTime.UtcNow.AddDays(7),
-        };
+        var refreshToken = RefreshToken.Criar(valorToken, usuario.Id, usuario.TenantId, dateTime);
 
         await refreshTokenRepository.AdicionarAsync(refreshToken, ct);
         await refreshTokenRepository.SalvarAlteracoesAsync(ct);

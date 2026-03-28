@@ -118,11 +118,11 @@ public sealed class IdentityMapping :
     {
         builder.ToTable("refresh_tokens");
 
-        builder.HasKey(rt => rt.Id);
-        builder.Property(rt => rt.Id).HasColumnName("id");
+        // Colunas base (id, tenant_id, criado_em, atualizado_em, excluido_em) + query filter tenant + soft-delete
+        EntidadeBaseMapping.AplicarColunasPadrao(builder, _tenantContext);
+
         builder.Property(rt => rt.Token).HasColumnName("token").IsRequired().HasMaxLength(512);
         builder.Property(rt => rt.UsuarioId).HasColumnName("usuario_id");
-        builder.Property(rt => rt.TenantId).HasColumnName("tenant_id");
         builder.Property(rt => rt.ExpiraEm).HasColumnName("expira_em");
         builder.Property(rt => rt.UsadoEm).HasColumnName("usado_em");
         builder.Property(rt => rt.Revogado).HasColumnName("revogado");
@@ -135,8 +135,5 @@ public sealed class IdentityMapping :
             .WithMany()
             .HasForeignKey(rt => rt.UsuarioId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        // Global Query Filter — isola automaticamente por tenant
-        builder.HasQueryFilter(rt => rt.TenantId == _tenantContext.TenantId);
     }
 }

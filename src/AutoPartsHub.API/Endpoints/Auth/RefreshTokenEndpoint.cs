@@ -21,12 +21,7 @@ public static class RefreshTokenEndpoint
         {
             var command = new RefreshTokenCommand(request.RefreshToken);
             var resultado = await sender.Send(command, ct);
-
-            if (resultado.IsSuccess)
-                return Results.Ok(resultado.Value);
-
-            var erros = resultado.Errors.Select(e => e.Message);
-            return Results.UnprocessableEntity(new { erros });
+            return resultado.ParaIResult();
         })
         .WithName("RefreshToken")
         .WithSummary("Renova JWT usando refresh token (rotação — token antigo é invalidado)")

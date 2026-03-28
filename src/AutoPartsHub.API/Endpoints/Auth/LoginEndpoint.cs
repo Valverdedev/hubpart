@@ -20,13 +20,7 @@ public static class LoginEndpoint
             CancellationToken ct) =>
         {
             var resultado = await sender.Send(command, ct);
-
-            if (resultado.IsSuccess)
-                return Results.Ok(resultado.Value);
-
-            // Retorna 422 com a lista de erros de negócio (nunca expõe detalhes internos)
-            var erros = resultado.Errors.Select(e => e.Message);
-            return Results.UnprocessableEntity(new { erros });
+            return resultado.ParaIResult();
         })
         .WithName("Login")
         .WithSummary("Autentica usuário e retorna JWT + refresh token")

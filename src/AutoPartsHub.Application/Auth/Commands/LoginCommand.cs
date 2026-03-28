@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AutoPartsHub.Application.Common;
 using AutoPartsHub.Domain.Entidades;
 using AutoPartsHub.Domain.Interfaces;
 using FluentResults;
@@ -31,7 +32,7 @@ public record LoginResultadoDto(
 // ---------------------------------------------------------------------------
 
 /// <summary>Command de autenticação — recebe email e senha, retorna JWT + refresh token.</summary>
-public record LoginCommand(string Email, string Senha) : IRequest<Result<LoginResultadoDto>>;
+public record LoginCommand(string Email, string Senha) : ICommand<LoginResultadoDto>;
 
 // ---------------------------------------------------------------------------
 // Validator
@@ -62,8 +63,9 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
 public sealed class LoginCommandHandler(
     UserManager<UsuarioApp> userManager,
     IConfiguration configuracao,
-    IRefreshTokenRepository refreshTokenRepository
-) : IRequestHandler<LoginCommand, Result<LoginResultadoDto>>
+    IRefreshTokenRepository refreshTokenRepository,
+    IDateTimeProvider dateTime
+) : ICommandHandler<LoginCommand, LoginResultadoDto>
 {
     public async Task<Result<LoginResultadoDto>> Handle(LoginCommand command, CancellationToken ct)
     {
@@ -87,7 +89,7 @@ public sealed class LoginCommandHandler(
         var refreshToken = await GerarRefreshTokenAsync(usuario, ct);
 
         // 6. Atualiza último login
-        usuario.UltimoLoginEm = DateTime.UtcNow;
+        usuario.UltimoLoginEm = dateTime.UtcNow;
         await userManager.UpdateAsync(usuario);
 
         return Result.Ok(new LoginResultadoDto(
@@ -141,13 +143,7 @@ public sealed class LoginCommandHandler(
         var bytes = RandomNumberGenerator.GetBytes(32);
         var valorToken = Convert.ToBase64String(bytes);
 
-        var refreshToken = new RefreshToken
-        {
-            Token = valorToken,
-            UsuarioId = usuario.Id,
-            TenantId = usuario.TenantId,
-            ExpiraEm = DateTime.UtcNow.AddDays(7),
-        };
+        var refreshToken = RefreshToken.Criar(valorToken, usuario.Id, usuario.TenantId, dateTime);
 
         await refreshTokenRepository.AdicionarAsync(refreshToken, ct);
         await refreshTokenRepository.SalvarAlteracoesAsync(ct);
