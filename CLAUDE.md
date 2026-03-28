@@ -45,8 +45,8 @@ AutoPartsHub.sln
 
 ## Regras de código
 
-- Classes e métodos em **inglês**
-- Comentários e documentação em **português**
+- Classes, métodos, variáveis e comentários em **português**
+- Exceções: palavras reservadas do C# e nomes de frameworks permanecem em inglês (ex: Handler, Command, Query, Repository)
 - Sempre usar **Result pattern** para retorno de erros (nunca throw em handlers)
 - **Multi-tenancy obrigatório**: toda query deve respeitar o `tenant_id`
 - EF Core Global Query Filter filtra por tenant automaticamente

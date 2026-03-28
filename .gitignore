@@ -30,12 +30,12 @@ artifacts/
 
 # ---------- Segredos e configs locais ----------
 # NUNCA commitar — copiar de appsettings.Example.json
+appsettings.json
 appsettings.Development.json
 appsettings.Local.json
 appsettings.Production.json
 appsettings.Staging.json
-# Manter estes:
-!appsettings.json
+# Manter apenas o exemplo (sem credenciais reais):
 !appsettings.Example.json
 
 *.pfx
