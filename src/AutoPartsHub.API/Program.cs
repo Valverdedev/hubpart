@@ -1,7 +1,9 @@
 using AutoPartsHub.API.Endpoints.Auth;
 using AutoPartsHub.API.Extensions;
 using AutoPartsHub.Application.Auth.Commands;
+using AutoPartsHub.Application.Common;
 using AutoPartsHub.Domain.Interfaces;
+using AutoPartsHub.Infra.Common;
 using AutoPartsHub.Infra.Identity;
 using AutoPartsHub.Infra.Persistencia;
 using AutoPartsHub.Infra.Repositorios;
@@ -15,9 +17,11 @@ var builder = WebApplication.CreateBuilder(args);
 // --- OpenAPI ---
 builder.Services.AddOpenApi();
 
-// --- Tenant Context (deve vir antes do DbContext pois AppDbContext depende de ITenantContext) ---
+// --- Infraestrutura de contexto (deve vir antes do DbContext) ---
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITenantContext, TenantContext>();
+builder.Services.AddScoped<IUsuarioAtual, UsuarioAtual>();
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 // --- Banco de dados ---
 // EnsureCreated = false — o schema já existe no PostgreSQL
@@ -40,7 +44,8 @@ builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
 // --- Repositórios ---
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-// --- Pipeline de validação automática no MediatR ---
+// --- Pipeline behaviors (ordem importa: Logging → Validação → Handler) ---
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidacaoBehavior<,>));
 
 var app = builder.Build();

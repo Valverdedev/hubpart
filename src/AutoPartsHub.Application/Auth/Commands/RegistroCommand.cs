@@ -1,3 +1,4 @@
+using AutoPartsHub.Application.Common;
 using AutoPartsHub.Domain.Entidades;
 using FluentResults;
 using FluentValidation;
@@ -20,7 +21,7 @@ public record RegistroCommand(
     string Senha,
     Guid TenantId,
     string Role
-) : IRequest<Result<Guid>>;
+) : ICommand<Guid>;
 
 // ---------------------------------------------------------------------------
 // Validator
@@ -61,7 +62,7 @@ public sealed class RegistroCommandValidator : AbstractValidator<RegistroCommand
 
 public sealed class RegistroCommandHandler(
     UserManager<UsuarioApp> userManager
-) : IRequestHandler<RegistroCommand, Result<Guid>>
+) : ICommandHandler<RegistroCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(RegistroCommand command, CancellationToken ct)
     {

@@ -33,12 +33,7 @@ public static class RegistroEndpoint
             );
 
             var resultado = await sender.Send(command, ct);
-
-            if (resultado.IsSuccess)
-                return Results.Created($"/api/v1/usuarios/{resultado.Value}", new { id = resultado.Value });
-
-            var erros = resultado.Errors.Select(e => e.Message);
-            return Results.UnprocessableEntity(new { erros });
+            return resultado.ParaIResultCriado(id => $"/api/v1/usuarios/{id}");
         })
         .WithName("Registro")
         .WithSummary("Registra novo usuário no mesmo tenant do Admin autenticado")

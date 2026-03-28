@@ -4,15 +4,14 @@ namespace AutoPartsHub.Domain.Interfaces;
 
 /// <summary>
 /// Contrato para persistência e consulta de refresh tokens.
+/// Herda IRepositorio para operações genéricas (AdicionarAsync, SalvarAlteracoesAsync, etc.).
 /// </summary>
-public interface IRefreshTokenRepository
+public interface IRefreshTokenRepository : IRepositorio<RefreshToken>
 {
-    /// <summary>Persiste um novo refresh token.</summary>
-    Task AdicionarAsync(RefreshToken token, CancellationToken ct = default);
-
-    /// <summary>Busca um refresh token pelo valor do token.</summary>
+    /// <summary>
+    /// Busca um refresh token pelo valor do token, ignorando o Global Query Filter.
+    /// Necessário pois o token chega antes de saber o tenant — a verificação de tenant
+    /// é feita explicitamente no handler após obter o usuário.
+    /// </summary>
     Task<RefreshToken?> ObterPorTokenAsync(string token, CancellationToken ct = default);
-
-    /// <summary>Persiste as alterações no token (usado para registrar uso/revogação).</summary>
-    Task SalvarAlteracoesAsync(CancellationToken ct = default);
 }

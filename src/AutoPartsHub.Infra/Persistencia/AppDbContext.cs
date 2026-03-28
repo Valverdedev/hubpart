@@ -1,9 +1,11 @@
 using AutoPartsHub.Domain.Entidades;
 using AutoPartsHub.Domain.Interfaces;
 using AutoPartsHub.Infra.Persistencia.Mappings;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace AutoPartsHub.Infra.Persistencia;
 
@@ -19,11 +21,19 @@ namespace AutoPartsHub.Infra.Persistencia;
 public class AppDbContext : IdentityDbContext<UsuarioApp, IdentityRole<Guid>, Guid>
 {
     private readonly ITenantContext _tenantContext;
+    private readonly IPublisher _publisher;
+    private readonly IDateTimeProvider _dateTime;
 
-    public AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext tenantContext)
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options,
+        ITenantContext tenantContext,
+        IPublisher publisher,
+        IDateTimeProvider dateTime)
         : base(options)
     {
         _tenantContext = tenantContext;
+        _publisher = publisher;
+        _dateTime = dateTime;
     }
 
     // --- DbSets principais ---
@@ -52,5 +62,46 @@ public class AppDbContext : IdentityDbContext<UsuarioApp, IdentityRole<Guid>, Gu
         builder.ApplyConfiguration<IdentityRoleClaim<Guid>>(identityMapping);
         builder.ApplyConfiguration<IdentityUserToken<Guid>>(identityMapping);
         builder.ApplyConfiguration<RefreshToken>(identityMapping);
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        AtualizarTimestamps();
+
+        // Coleta eventos antes de salvar — após SaveChanges as entidades podem ser desanexadas
+        var eventos = ColetarEventos();
+
+        var resultado = await base.SaveChangesAsync(cancellationToken);
+
+        await PublicarEventosAsync(eventos, cancellationToken);
+
+        return resultado;
+    }
+
+    private void AtualizarTimestamps()
+    {
+        var entidadesModificadas = ChangeTracker.Entries<EntidadeBase>()
+            .Where(e => e.State == EntityState.Modified);
+
+        foreach (var entry in entidadesModificadas)
+            entry.Entity.MarcarComoAtualizado(_dateTime);
+    }
+
+    private List<IDomainEvent> ColetarEventos()
+    {
+        var eventos = ChangeTracker.Entries<EntidadeBase>()
+            .SelectMany(e => e.Entity.Eventos)
+            .ToList();
+
+        foreach (var entry in ChangeTracker.Entries<EntidadeBase>())
+            entry.Entity.LimparEventos();
+
+        return eventos;
+    }
+
+    private async Task PublicarEventosAsync(List<IDomainEvent> eventos, CancellationToken ct)
+    {
+        foreach (var evento in eventos)
+            await _publisher.Publish(new DomainEventAdapter(evento), ct);
     }
 }
