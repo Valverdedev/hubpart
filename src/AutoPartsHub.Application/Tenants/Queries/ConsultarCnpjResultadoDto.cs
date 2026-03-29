@@ -12,11 +12,16 @@ public record ConsultarCnpjResultadoDto(
 
 /// <summary>
 /// Endereço retornado pela Receita Federal, mapeado para o formato do formulário de cadastro.
-/// Campos nulos indicam que a Receita Federal não retornou o dado.
+/// CodigoUf e CodigoIbge são resolvidos contra a tabela de referência interna — podem ser null
+/// se estado/cidade não forem encontrados.
 /// </summary>
 public record ConsultarCnpjEnderecoDto(
     string? Cep,
     string? Logradouro,
     string? Numero,
     string? Complemento,
-    string? Bairro);
+    string? Bairro,
+    string? Cidade,
+    string? Uf,
+    int? CodigoUf,
+    int? CodigoIbge);

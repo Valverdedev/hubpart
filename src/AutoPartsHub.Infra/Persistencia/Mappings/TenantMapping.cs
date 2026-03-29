@@ -1,7 +1,7 @@
 using AutoPartsHub.Domain.Entidades;
 using AutoPartsHub.Domain.Enums;
-using AutoPartsHub.Domain.Interfaces;
 using AutoPartsHub.Domain.ValueObjects;
+using AutoPartsHub.Infra.Persistencia;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,11 +9,11 @@ namespace AutoPartsHub.Infra.Persistencia.Mappings;
 
 public sealed class TenantMapping : IEntityTypeConfiguration<Tenant>
 {
-    private readonly ITenantContext _tenantContext;
+    private readonly AppDbContext _dbContext;
 
-    public TenantMapping(ITenantContext tenantContext)
+    public TenantMapping(AppDbContext dbContext)
     {
-        _tenantContext = tenantContext;
+        _dbContext = dbContext;
     }
 
     public void Configure(EntityTypeBuilder<Tenant> builder)
@@ -22,7 +22,7 @@ public sealed class TenantMapping : IEntityTypeConfiguration<Tenant>
 
         // Colunas base (id, tenant_id, criado_em, atualizado_em, excluido_em) + query filter
         // IMPORTANTE: não chamar HasQueryFilter novamente — EntidadeBaseMapping já aplica
-        EntidadeBaseMapping.AplicarColunasPadrao(builder, _tenantContext);
+        EntidadeBaseMapping.AplicarColunasPadrao(builder, _dbContext);
 
         builder.Property(t => t.RazaoSocial)
             .HasColumnName("razao_social")
@@ -74,12 +74,13 @@ public sealed class TenantMapping : IEntityTypeConfiguration<Tenant>
 
             // Ignorar propriedades computadas
             cnpj.Ignore(c => c.Formatado);
-        });
 
-        // Índice único global no CNPJ (não filtrado por tenant — CNPJ é único na plataforma)
-        builder.HasIndex("Cnpj_Valor")
-            .IsUnique()
-            .HasDatabaseName("ix_tenants_cnpj");
+            // Índice único global no CNPJ (não filtrado por tenant — CNPJ é único na plataforma)
+            // Definido dentro do OwnsOne pois HasIndex não suporta navegação em owned types
+            cnpj.HasIndex(c => c.Valor)
+                .IsUnique()
+                .HasDatabaseName("ix_tenants_cnpj");
+        });
 
         // Value Object: Email → coluna única "email"
         builder.OwnsOne(t => t.Email, email =>
@@ -120,17 +121,13 @@ public sealed class TenantMapping : IEntityTypeConfiguration<Tenant>
                 .IsRequired()
                 .HasMaxLength(11);
 
-            tel.Property(f => f.DDD)
-                .HasColumnName("ddd")
-                .IsRequired()
-                .HasMaxLength(2);
-
             tel.Property(f => f.TipoTelefone)
                 .HasColumnName("tipo")
                 .HasConversion<string>()
                 .HasMaxLength(10);
 
-            // Propriedades computadas — não persistidas
+            // Propriedades computadas — derivadas de Valor, não persistidas
+            tel.Ignore(f => f.DDD);
             tel.Ignore(f => f.Numero);
             tel.Ignore(f => f.Formatado);
         });

@@ -99,8 +99,7 @@ CREATE INDEX ix_tenants_tenant_id        ON tenants (tenant_id) WHERE excluido_e
 CREATE TABLE tenant_telefones (
     id          serial                  NOT NULL,
     tenant_id   uuid                    NOT NULL,
-    valor       character varying(11)   NOT NULL,   -- apenas dígitos (10 ou 11)
-    ddd         character varying(2)    NOT NULL,
+    valor       character varying(11)   NOT NULL,   -- apenas dígitos (10 ou 11) — DDD embutido nos 2 primeiros dígitos
     tipo        character varying(10)   NOT NULL,   -- Fixo | Celular
 
     CONSTRAINT pk_tenant_telefones      PRIMARY KEY (id),

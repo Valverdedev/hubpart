@@ -158,21 +158,29 @@ CREATE TABLE IF NOT EXISTS usuario_tokens (
 -- -----------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (
-    id         uuid         NOT NULL DEFAULT gen_random_uuid(),
-    token      varchar(512) NOT NULL,
-    usuario_id uuid         NOT NULL,
-    tenant_id  uuid         NOT NULL,
-    expira_em  timestamptz  NOT NULL,
-    usado_em   timestamptz  NULL,
-    revogado   boolean      NOT NULL DEFAULT false,
+    -- EntidadeBase
+    id            uuid         NOT NULL DEFAULT gen_random_uuid(),
+    tenant_id     uuid         NOT NULL,
+    criado_em     timestamptz  NOT NULL DEFAULT now(),
+    atualizado_em timestamptz  NULL,
+    excluido_em   timestamptz  NULL,
+
+    -- Campos específicos do token
+    -- token_hash: SHA-256 (hex lowercase, 64 chars) do valor bruto que trafega apenas no HTTP
+    token_hash    varchar(64)  NOT NULL,
+    usuario_id    uuid         NOT NULL,
+    expira_em     timestamptz  NOT NULL,
+    usado_em      timestamptz  NULL,
+    revogado      boolean      NOT NULL DEFAULT false,
 
     CONSTRAINT pk_refresh_tokens PRIMARY KEY (id),
     CONSTRAINT fk_refresh_tokens_usuario FOREIGN KEY (usuario_id)
         REFERENCES usuarios (id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS ux_refresh_tokens_token
-    ON refresh_tokens (token);
+-- Apenas o hash é indexado — o valor bruto nunca é persistido
+CREATE UNIQUE INDEX IF NOT EXISTS ux_refresh_tokens_token_hash
+    ON refresh_tokens (token_hash);
 
 CREATE INDEX IF NOT EXISTS ix_refresh_tokens_usuario_revogado
     ON refresh_tokens (usuario_id, revogado);

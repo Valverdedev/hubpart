@@ -32,6 +32,12 @@ public sealed record Telefone
         TipoTelefone = tipo;
     }
 
+    /// <summary>Construtor sem parâmetros exigido pelo EF Core para materialização.</summary>
+    private Telefone()
+    {
+        Valor = string.Empty;
+    }
+
     /// <summary>
     /// Cria um Telefone a partir de string com ou sem formatação.
     /// Aceita com ou sem código de país +55.

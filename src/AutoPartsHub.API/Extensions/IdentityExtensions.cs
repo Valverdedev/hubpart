@@ -1,5 +1,5 @@
 using System.Text;
-using AutoPartsHub.Domain.Entidades;
+using AutoPartsHub.Infra.Identity;
 using AutoPartsHub.Infra.Persistencia;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

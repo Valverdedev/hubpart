@@ -7,7 +7,7 @@ Conecta oficinas, frotas e revendas a fornecedores locais.
 
 | Camada | Tecnologia |
 |--------|-----------|
-| API | ASP.NET Core 8 — Minimal API, versionamento |
+| API | ASP.NET Core 10 — Controllers + Swagger (Swashbuckle), versionamento |
 | Lógica | CQRS com MediatR + FluentValidation |
 | Auth | ASP.NET Identity + JWT + Refresh Token |
 | Tempo real | SignalR + Redis backplane (sem Azure SignalR) |

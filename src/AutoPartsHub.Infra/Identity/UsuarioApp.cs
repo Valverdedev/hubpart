@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace AutoPartsHub.Domain.Entidades;
+namespace AutoPartsHub.Infra.Identity;
 
 /// <summary>
 /// Usuário da aplicação. Herda IdentityUser para integração com ASP.NET Identity.
 /// Cada usuário pertence a um tenant (empresa/oficina/fornecedor).
+///
+/// Mantido em Infra para preservar o Domain livre de dependências de framework.
 /// </summary>
 public class UsuarioApp : IdentityUser<Guid>
 {

@@ -1,23 +1,25 @@
-using AutoPartsHub.API.Endpoints.Auth;
-using AutoPartsHub.API.Endpoints.Tenants;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using AutoPartsHub.API.Extensions;
 using AutoPartsHub.Application.Auth.Commands;
 using AutoPartsHub.Application.Common;
+using AutoPartsHub.Application.Interfaces;
 using AutoPartsHub.Domain.Interfaces;
 using AutoPartsHub.Infra.Common;
 using AutoPartsHub.Infra.Identity;
+using AutoPartsHub.Infra.Integracoes;
 using AutoPartsHub.Infra.Persistencia;
 using AutoPartsHub.Infra.Repositorios;
-using AutoPartsHub.Infra.Integracoes;
-using FluentResults;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- OpenAPI + Scalar ---
-builder.Services.AdicionarOpenApi();
+// --- Controllers + OpenAPI ---
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AdicionarSwagger();
 
 // --- Infraestrutura de contexto (deve vir antes do DbContext) ---
 builder.Services.AddHttpContextAccessor();
@@ -26,11 +28,10 @@ builder.Services.AddScoped<IUsuarioAtual, UsuarioAtual>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 // --- Banco de dados ---
-// EnsureCreated = false — o schema já existe no PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(opcoes =>
 {
     opcoes.UseNpgsql(builder.Configuration.GetConnectionString("Default"))
-          .UseSnakeCaseNamingConvention(); // mapeia UserName → user_name, TenantId → tenant_id, etc.
+          .UseSnakeCaseNamingConvention();
 });
 
 // --- Identity + JWT ---
@@ -46,33 +47,59 @@ builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
 // --- Repositórios ---
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+builder.Services.AddScoped<ILocalizacaoRepository, LocalizacaoRepository>();
+
+// --- Serviços de identidade e tokens ---
+builder.Services.AddScoped<IIdentidadeService, IdentidadeService>();
+builder.Services.AddSingleton<ITokenService, TokenService>();
+
+// --- Serviços de domínio ---
+builder.Services.AddScoped<ILocalizacaoService, LocalizacaoService>();
 
 // --- Integrações externas ---
-// TODO: substituir pelo cliente real da Receita Federal quando implementado
-builder.Services.AddScoped<ICnpjService, CnpjServiceStub>();
+builder.Services.AddHttpClient<ICnpjService, CnpjService>(c =>
+{
+    c.BaseAddress = new Uri("https://open.cnpja.com/");
+    c.Timeout = TimeSpan.FromSeconds(10);
+});
 
 // --- Pipeline behaviors (ordem importa: Logging → Validação → Handler) ---
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidacaoBehavior<,>));
 
+// --- Rate limiting (proteção anti-abuso nos endpoints anônimos de auth) ---
+builder.Services.AddRateLimiter(opcoes =>
+{
+    opcoes.AddFixedWindowLimiter("auth", limiter =>
+    {
+        limiter.Window = TimeSpan.FromMinutes(1);
+        limiter.PermitLimit = 10;
+        limiter.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiter.QueueLimit = 0;
+    });
+
+    opcoes.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 var app = builder.Build();
 
 // --- Middlewares ---
 if (app.Environment.IsDevelopment())
-    app.UsarScalar();
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "AutoPartsHub API v1");
+        c.RoutePrefix = "swagger";
+    });
+}
 
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// --- Endpoints de autenticação ---
-app.MaparRegistro();
-app.MaparLogin();
-app.MaparRefreshToken();
-
-// --- Endpoints de tenants ---
-app.MaparConsultarCnpj();
-app.MaparCadastrarTenant();
+app.MapControllers();
 
 app.Run();
 
@@ -109,12 +136,11 @@ internal sealed class ValidacaoBehavior<TRequest, TResponse>(
         if (mensagensDeErro.Count == 0)
             return await next(ct);
 
-        // Retorna Result.Fail quando TResponse é Result<T> — sem throw
         var tipoResposta = typeof(TResponse);
-        if (tipoResposta.IsGenericType && tipoResposta.GetGenericTypeDefinition() == typeof(Result<>))
+        if (tipoResposta.IsGenericType && tipoResposta.GetGenericTypeDefinition() == typeof(FluentResults.Result<>))
         {
             var tipoValor = tipoResposta.GetGenericArguments()[0];
-            var metodo = typeof(Result)
+            var metodo = typeof(FluentResults.Result)
                 .GetMethods()
                 .First(m => m.Name == "Fail" && m.IsGenericMethod && m.GetParameters().Length == 1
                             && m.GetParameters()[0].ParameterType == typeof(string))
@@ -123,11 +149,9 @@ internal sealed class ValidacaoBehavior<TRequest, TResponse>(
             return (TResponse)metodo.Invoke(null, [string.Join(" | ", mensagensDeErro)])!;
         }
 
-        // Para Result não genérico
-        if (tipoResposta == typeof(Result))
-            return (TResponse)(object)Result.Fail(string.Join(" | ", mensagensDeErro));
+        if (tipoResposta == typeof(FluentResults.Result))
+            return (TResponse)(object)FluentResults.Result.Fail(string.Join(" | ", mensagensDeErro));
 
-        // Fallback para outros tipos de retorno (não deveria ocorrer no projeto)
-        throw new ValidationException(string.Join(" | ", mensagensDeErro));
+        throw new FluentValidation.ValidationException(string.Join(" | ", mensagensDeErro));
     }
 }

@@ -1,4 +1,5 @@
 using AutoPartsHub.Application.Common;
+using AutoPartsHub.Application.Interfaces;
 using AutoPartsHub.Domain.Interfaces;
 using AutoPartsHub.Domain.ValueObjects;
 using FluentResults;
@@ -7,7 +8,8 @@ namespace AutoPartsHub.Application.Tenants.Queries;
 
 public sealed class ConsultarCnpjQueryHandler(
     ITenantRepository tenantRepository,
-    ICnpjService cnpjService
+    ICnpjService cnpjService,
+    ILocalizacaoService localizacaoService
 ) : IQueryHandler<ConsultarCnpjQuery, ConsultarCnpjResultadoDto>
 {
     public async Task<Result<ConsultarCnpjResultadoDto>> Handle(
@@ -31,17 +33,24 @@ public sealed class ConsultarCnpjQueryHandler(
         if (consultaReceita is not null && !consultaReceita.Ativo)
             return Result.Fail<ConsultarCnpjResultadoDto>("cnpj_inativo");
 
-        // 4. Mapeia dados da Receita para o DTO de pré-preenchimento
+        // 4. Resolve estado e município contra a tabela de referência interna
         ConsultarCnpjEnderecoDto? enderecoDto = null;
 
         if (consultaReceita is not null)
         {
+            var localizacao = await localizacaoService.ResolverAsync(
+                consultaReceita.Uf, consultaReceita.Cidade, ct);
+
             enderecoDto = new ConsultarCnpjEnderecoDto(
                 Cep: consultaReceita.Cep,
                 Logradouro: consultaReceita.Logradouro,
                 Numero: consultaReceita.Numero,
                 Complemento: consultaReceita.Complemento,
-                Bairro: consultaReceita.Bairro);
+                Bairro: consultaReceita.Bairro,
+                Cidade: consultaReceita.Cidade,
+                Uf: consultaReceita.Uf,
+                CodigoUf: localizacao.CodigoUf,
+                CodigoIbge: localizacao.CodigoIbge);
         }
 
         var resultado = new ConsultarCnpjResultadoDto(

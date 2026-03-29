@@ -1,16 +1,9 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using AutoPartsHub.Application.Common;
+using AutoPartsHub.Application.Interfaces;
 using AutoPartsHub.Domain.Entidades;
 using AutoPartsHub.Domain.Interfaces;
 using FluentResults;
 using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace AutoPartsHub.Application.Auth.Commands;
 
@@ -57,12 +50,13 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
 // ---------------------------------------------------------------------------
 
 /// <summary>
-/// Autentica o usuário, gera JWT com claims obrigatórias e persiste o refresh token.
+/// Autentica o usuário, gera JWT com claims obrigatórias e persiste o hash do refresh token.
 /// Segue o Result pattern — nunca lança exceções de negócio.
+/// Persiste refresh token e atualiza último login em uma única transação (SaveChangesAsync único).
 /// </summary>
 public sealed class LoginCommandHandler(
-    UserManager<UsuarioApp> userManager,
-    IConfiguration configuracao,
+    IIdentidadeService identidade,
+    ITokenService tokenService,
     IRefreshTokenRepository refreshTokenRepository,
     IDateTimeProvider dateTime
 ) : ICommandHandler<LoginCommand, LoginResultadoDto>
@@ -70,84 +64,39 @@ public sealed class LoginCommandHandler(
     public async Task<Result<LoginResultadoDto>> Handle(LoginCommand command, CancellationToken ct)
     {
         // 1. Localiza o usuário pelo e-mail
-        var usuario = await userManager.FindByEmailAsync(command.Email);
+        var usuario = await identidade.BuscarPorEmailAsync(command.Email, ct);
         if (usuario is null)
             return Result.Fail<LoginResultadoDto>("credenciais_invalidas");
 
         // 2. Valida a senha
-        var senhaCorreta = await userManager.CheckPasswordAsync(usuario, command.Senha);
+        var senhaCorreta = await identidade.ValidarSenhaAsync(usuario.Id, command.Senha, ct);
         if (!senhaCorreta)
             return Result.Fail<LoginResultadoDto>("credenciais_invalidas");
 
         // 3. Obtém os roles do usuário
-        var roles = await userManager.GetRolesAsync(usuario);
+        var roles = await identidade.ObterRolesAsync(usuario.Id, ct);
 
         // 4. Gera o JWT
-        var (token, expiraEm) = GerarJwt(usuario, roles);
+        var (token, expiraEm) = tokenService.GerarJwt(
+            usuario.Id, usuario.TenantId, usuario.Email, usuario.NomeCompleto, roles);
 
-        // 5. Gera e persiste o refresh token
-        var refreshToken = await GerarRefreshTokenAsync(usuario, ct);
+        // 5. Gera refresh token — valor bruto retornado ao cliente, hash persistido no banco
+        var valorBruto = tokenService.GerarRefreshToken();
+        var hash = tokenService.HashRefreshToken(valorBruto);
 
-        // 6. Atualiza último login
-        usuario.UltimoLoginEm = dateTime.UtcNow;
-        await userManager.UpdateAsync(usuario);
+        var refreshToken = RefreshToken.Criar(hash, usuario.Id, usuario.TenantId, dateTime);
+        await refreshTokenRepository.AdicionarAsync(refreshToken, ct);
+
+        // 6. Atualiza último login e persiste tudo em uma única operação
+        await identidade.AtualizarUltimoLoginAsync(usuario.Id, ct);
+        await refreshTokenRepository.SalvarAlteracoesAsync(ct);
 
         return Result.Ok(new LoginResultadoDto(
             Token: token,
-            RefreshToken: refreshToken,
+            RefreshToken: valorBruto,
             ExpiraEm: expiraEm,
             NomeCompleto: usuario.NomeCompleto,
             Roles: [.. roles]
         ));
-    }
-
-    private (string Token, DateTime ExpiraEm) GerarJwt(UsuarioApp usuario, IList<string> roles)
-    {
-        var segredo = configuracao["Jwt:Secret"]
-            ?? throw new InvalidOperationException("JWT secret não configurado.");
-
-        var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(segredo));
-        var credenciais = new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);
-
-        var minutosExpiracao = configuracao.GetValue<int>("Jwt:ExpiresInMinutes", 60);
-        var expiraEm = DateTime.UtcNow.AddMinutes(minutosExpiracao);
-
-        // Claims obrigatórias conforme CLAUDE.md: sub, tenant_id, role, email
-        var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
-            new(JwtRegisteredClaimNames.Email, usuario.Email!),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new("tenant_id", usuario.TenantId.ToString()),
-        };
-
-        // Adiciona um claim por role
-        foreach (var role in roles)
-            claims.Add(new Claim(ClaimTypes.Role, role));
-
-        var token = new JwtSecurityToken(
-            issuer: configuracao["Jwt:Issuer"],
-            audience: configuracao["Jwt:Audience"],
-            claims: claims,
-            notBefore: DateTime.UtcNow,
-            expires: expiraEm,
-            signingCredentials: credenciais
-        );
-
-        return (new JwtSecurityTokenHandler().WriteToken(token), expiraEm);
-    }
-
-    private async Task<string> GerarRefreshTokenAsync(UsuarioApp usuario, CancellationToken ct)
-    {
-        // Token criptograficamente seguro (256 bits → 44 chars em Base64)
-        var bytes = RandomNumberGenerator.GetBytes(32);
-        var valorToken = Convert.ToBase64String(bytes);
-
-        var refreshToken = RefreshToken.Criar(valorToken, usuario.Id, usuario.TenantId, dateTime);
-
-        await refreshTokenRepository.AdicionarAsync(refreshToken, ct);
-        await refreshTokenRepository.SalvarAlteracoesAsync(ct);
-
-        return valorToken;
     }
 }
