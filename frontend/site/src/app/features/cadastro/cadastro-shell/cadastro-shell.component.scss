@@ -1,0 +1,196 @@
+.cadastro-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--clr-bg);
+}
+
+/* ── Sidebar ─────────────────────────────────────── */
+.shell-sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--clr-secondary);
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.sidebar-inner {
+  padding: var(--spacing-xl) var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: var(--spacing-xl);
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Progresso */
+.progresso-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.progresso-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.progresso-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progresso-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.progresso-valor {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--clr-primary);
+  align-self: flex-end;
+}
+
+/* Etapas nav */
+.etapas-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.etapa-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all var(--transition-base);
+  cursor: pointer;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &.ativa {
+    color: #fff;
+    background: rgba(255, 107, 43, 0.15);
+  }
+
+  &.concluida {
+    color: rgba(255, 255, 255, 0.7);
+
+    .etapa-num {
+      background: var(--clr-primary);
+      color: #fff;
+    }
+  }
+}
+
+.etapa-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all var(--transition-base);
+
+  .check-icon {
+    font-size: 16px !important;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.etapa-item.ativa .etapa-num {
+  background: var(--gradient-primary);
+  color: #fff;
+}
+
+/* Rodapé sidebar */
+.sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  .label-sm {
+    color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.link-suporte {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color var(--transition-base);
+
+  &:hover {
+    color: var(--clr-primary);
+  }
+
+  mat-icon {
+    font-size: 18px !important;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ── Main ────────────────────────────────────────── */
+.shell-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell-content {
+  flex: 1;
+  padding: var(--spacing-3xl) var(--spacing-2xl);
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
+}

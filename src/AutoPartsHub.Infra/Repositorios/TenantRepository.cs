@@ -23,4 +23,26 @@ public sealed class TenantRepository(AppDbContext dbContext)
         => await DbContext.Tenants
             .Where(t => t.Status == StatusTenant.AguardandoAprovacao)
             .ToListAsync(ct);
+
+    public async Task<List<Tenant>> ListarTrialComExpiracaoEmAsync(int dias, CancellationToken ct = default)
+    {
+        var agora = DateTime.UtcNow;
+        var limite = agora.AddDays(dias);
+
+        return await DbContext.Tenants
+            .IgnoreQueryFilters()
+            .Where(t => t.StatusAssinatura == StatusAssinatura.Trial
+                     && t.TrialExpiraEmNovo.HasValue
+                     && t.TrialExpiraEmNovo >= agora
+                     && t.TrialExpiraEmNovo <= limite)
+            .ToListAsync(ct);
+    }
+
+    public async Task<List<Tenant>> ListarTrialExpiradosAsync(CancellationToken ct = default)
+        => await DbContext.Tenants
+            .IgnoreQueryFilters()
+            .Where(t => t.StatusAssinatura == StatusAssinatura.Trial
+                     && t.TrialExpiraEmNovo.HasValue
+                     && t.TrialExpiraEmNovo < DateTime.UtcNow)
+            .ToListAsync(ct);
 }

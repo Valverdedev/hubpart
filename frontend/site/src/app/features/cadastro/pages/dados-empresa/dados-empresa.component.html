@@ -1,0 +1,161 @@
+<div class="page-enter dados-empresa">
+  <header class="page-header">
+    <p class="label-sm step-label">Etapa 2 de 5</p>
+    <h1 class="page-title">Dados da Empresa</h1>
+    <p class="page-subtitle">
+      Informe os dados da sua empresa. Preencha o CNPJ para preenchimento automático.
+    </p>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="continuar()" novalidate>
+
+    <!-- Seção: Dados Fiscais -->
+    <section class="form-section">
+      <h2 class="section-title">
+        <mat-icon>receipt_long</mat-icon>
+        Dados Fiscais
+      </h2>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="field-cnpj">
+          <mat-label>CNPJ</mat-label>
+          <input
+            matInput
+            formControlName="cnpj"
+            placeholder="00.000.000/0001-00"
+            maxlength="18"
+            (blur)="consultarCnpj()"
+            id="campo-cnpj"
+          />
+          <mat-icon matSuffix>
+            @if (consultandoCnpj()) {
+              <mat-spinner diameter="18" />
+            } @else {
+              business
+            }
+          </mat-icon>
+          @if (form.get('cnpj')?.hasError('cnpjInvalido') && form.get('cnpj')?.touched) {
+            <mat-error>CNPJ inválido</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      @if (erroCnpj()) {
+        <div class="alerta-erro">
+          <mat-icon>error_outline</mat-icon>
+          {{ erroCnpj() }}
+        </div>
+      }
+
+      <div class="form-row form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Razão Social</mat-label>
+          <input matInput formControlName="razaoSocial" id="campo-razao-social" />
+          @if (form.get('razaoSocial')?.hasError('required') && form.get('razaoSocial')?.touched) {
+            <mat-error>Campo obrigatório</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nome Fantasia</mat-label>
+          <input matInput formControlName="nomeFantasia" id="campo-nome-fantasia" />
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="field-md">
+          <mat-label>Telefone</mat-label>
+          <mat-icon matPrefix>phone</mat-icon>
+          <input matInput formControlName="telefone" placeholder="(00) 00000-0000" id="campo-telefone" />
+        </mat-form-field>
+      </div>
+    </section>
+
+    <mat-divider />
+
+    <!-- Seção: Endereço -->
+    <section class="form-section">
+      <h2 class="section-title">
+        <mat-icon>location_on</mat-icon>
+        Endereço
+      </h2>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="field-sm">
+          <mat-label>CEP</mat-label>
+          <input matInput formControlName="cep" placeholder="00000-000" maxlength="9" id="campo-cep" />
+          @if (form.get('cep')?.hasError('required') && form.get('cep')?.touched) {
+            <mat-error>Campo obrigatório</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Logradouro</mat-label>
+          <input matInput formControlName="logradouro" id="campo-logradouro" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field-xs">
+          <mat-label>Número</mat-label>
+          <input matInput formControlName="numero" id="campo-numero" />
+        </mat-form-field>
+      </div>
+
+      <div class="form-row form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Complemento</mat-label>
+          <input matInput formControlName="complemento" id="campo-complemento" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Bairro</mat-label>
+          <input matInput formControlName="bairro" id="campo-bairro" />
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Cidade</mat-label>
+          <input matInput formControlName="cidade" id="campo-cidade" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field-xs">
+          <mat-label>UF</mat-label>
+          <input matInput formControlName="uf" maxlength="2" id="campo-uf" />
+        </mat-form-field>
+      </div>
+    </section>
+
+    <!-- Seção: Dados de Frota (apenas para frotistas) -->
+    @if (ehFrotista()) {
+      <mat-divider />
+      <section class="form-section">
+        <h2 class="section-title">
+          <mat-icon>local_shipping</mat-icon>
+          Dados da Frota
+        </h2>
+        <div class="form-row form-row-2">
+          <mat-form-field appearance="outline">
+            <mat-label>Quantidade de Veículos</mat-label>
+            <input matInput type="number" formControlName="quantidadeVeiculos" min="1" id="campo-qt-veiculos" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Setor de Atuação</mat-label>
+            <input matInput formControlName="setorAtuacao" placeholder="Ex: Transporte, Agronegócio..." id="campo-setor" />
+          </mat-form-field>
+        </div>
+      </section>
+    }
+
+    <!-- Ações -->
+    <div class="page-actions">
+      <button type="button" class="btn-voltar" (click)="voltar()">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar
+      </button>
+      <button type="submit" class="btn-primary-gradient btn-continuar" [disabled]="form.invalid">
+        Continuar
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,148 @@
+<div class="page-enter responsavel-acesso">
+  <header class="page-header">
+    <p class="label-sm step-label">Etapa 3 de 5</p>
+    <h1 class="page-title">Responsável e Acesso</h1>
+    <p class="page-subtitle">
+      Defina o responsável pela conta e crie as credenciais de acesso.
+    </p>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="continuar()" novalidate>
+
+    <!-- Dados do responsável -->
+    <section class="form-section">
+      <h2 class="section-title">
+        <mat-icon>manage_accounts</mat-icon>
+        Dados do Responsável
+      </h2>
+
+      <div class="form-row form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome Completo</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="nomeCompleto" id="campo-nome-completo" />
+          @if (form.get('nomeCompleto')?.hasError('required') && form.get('nomeCompleto')?.touched) {
+            <mat-error>Campo obrigatório</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cargo / Função</mat-label>
+          <input matInput formControlName="cargo" id="campo-cargo" />
+          @if (form.get('cargo')?.hasError('required') && form.get('cargo')?.touched) {
+            <mat-error>Campo obrigatório</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>E-mail</mat-label>
+          <mat-icon matPrefix>email</mat-icon>
+          <input matInput type="email" formControlName="email" id="campo-email" />
+          @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+            <mat-error>Campo obrigatório</mat-error>
+          }
+          @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+            <mat-error>E-mail inválido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Telefone / WhatsApp</mat-label>
+          <mat-icon matPrefix>phone</mat-icon>
+          <input matInput formControlName="telefone" placeholder="(00) 00000-0000" id="campo-tel-resp" />
+        </mat-form-field>
+      </div>
+    </section>
+
+    <mat-divider />
+
+    <!-- Credenciais de acesso -->
+    <section class="form-section">
+      <h2 class="section-title">
+        <mat-icon>lock</mat-icon>
+        Credenciais de Acesso
+      </h2>
+
+      <div class="form-row form-row-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Senha</mat-label>
+          <input
+            matInput
+            [type]="mostrarSenha() ? 'text' : 'password'"
+            formControlName="senha"
+            id="campo-senha"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="toggleSenha()"
+            [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+          >
+            <mat-icon>{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.get('senha')?.hasError('senhaFraca') && form.get('senha')?.touched) {
+            <mat-error>Senha fraca: {{ form.get('senha')?.getError('senhaFraca') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Confirmar Senha</mat-label>
+          <input
+            matInput
+            [type]="mostrarSenha() ? 'text' : 'password'"
+            formControlName="confirmacaoSenha"
+            id="campo-confirm-senha"
+          />
+          @if (form.get('confirmacaoSenha')?.hasError('senhasNaoConferem') && form.get('confirmacaoSenha')?.touched) {
+            <mat-error>As senhas não conferem</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Força da senha -->
+      @if (form.get('senha')?.value) {
+        <div class="forca-senha">
+          <span class="label-sm">Força da senha</span>
+          <div class="forca-barras">
+            @for (barra of [1, 2, 3, 4]; track barra) {
+              <div class="forca-barra" [class]="'nivel-' + forcaSenha()"></div>
+            }
+          </div>
+          <span class="forca-label" [class]="'forca-' + forcaSenha()">{{ forcaSenhaTexto() }}</span>
+        </div>
+      }
+    </section>
+
+    <mat-divider />
+
+    <!-- Termos -->
+    <section class="form-section">
+      <mat-checkbox formControlName="aceitaTermos" id="checkbox-termos" color="primary">
+        <span class="termos-texto">
+          Li e concordo com os
+          <a href="/termos" target="_blank" class="link-termos">Termos de Uso</a>
+          e a
+          <a href="/privacidade" target="_blank" class="link-termos">Política de Privacidade</a>
+        </span>
+      </mat-checkbox>
+      @if (form.get('aceitaTermos')?.hasError('required') && form.get('aceitaTermos')?.touched) {
+        <p class="erro-termos">Você precisa aceitar os termos para continuar</p>
+      }
+    </section>
+
+    <!-- Ações -->
+    <div class="page-actions">
+      <button type="button" class="btn-voltar" (click)="voltar()">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar
+      </button>
+      <button type="submit" class="btn-primary-gradient btn-continuar" [disabled]="form.invalid">
+        Continuar
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </form>
+</div>

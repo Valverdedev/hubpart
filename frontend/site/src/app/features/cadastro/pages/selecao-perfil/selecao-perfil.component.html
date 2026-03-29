@@ -1,0 +1,67 @@
+<div class="page-enter selecao-perfil">
+  <!-- Cabeçalho -->
+  <header class="page-header">
+    <p class="label-sm step-label">AutoPartsHub — Bem-vindo</p>
+    <h1 class="page-title">Qual é o seu perfil?</h1>
+    <p class="page-subtitle">
+      Escolha o perfil que melhor representa seu negócio para personalizarmos sua experiência.
+    </p>
+  </header>
+
+  <!-- Cards de perfil -->
+  <div class="perfis-grid">
+    @for (opcao of opcoes; track opcao.tipo) {
+      <button
+        matRipple
+        class="perfil-card"
+        [class.selecionado]="perfilSelecionado === opcao.tipo"
+        [style.--cor-acento]="opcao.cor"
+        (click)="selecionarPerfil(opcao.tipo)"
+        [attr.aria-pressed]="perfilSelecionado === opcao.tipo"
+      >
+        <!-- Ícone -->
+        <div class="perfil-icone">
+          <mat-icon>{{ opcao.icone }}</mat-icon>
+        </div>
+
+        <!-- Conteúdo -->
+        <div class="perfil-info">
+          <h3 class="perfil-titulo">{{ opcao.titulo }}</h3>
+          <p class="perfil-descricao">{{ opcao.descricao }}</p>
+          <ul class="perfil-detalhes">
+            @for (detalhe of opcao.detalhes; track detalhe) {
+              <li>
+                <mat-icon class="check-mini">check_circle</mat-icon>
+                {{ detalhe }}
+              </li>
+            }
+          </ul>
+        </div>
+
+        <!-- Badge selecionado -->
+        @if (perfilSelecionado === opcao.tipo) {
+          <div class="badge-selecionado">
+            <mat-icon>check</mat-icon>
+          </div>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Ação -->
+  <div class="page-actions">
+    <button
+      class="btn-primary-gradient btn-continuar"
+      [disabled]="!perfilSelecionado"
+      (click)="continuar()"
+    >
+      <mat-icon>arrow_forward</mat-icon>
+      Continuar
+    </button>
+    <p class="termos-hint">
+      Ao continuar você concorda com nossos
+      <a href="/termos" target="_blank">Termos de Uso</a> e
+      <a href="/privacidade" target="_blank">Política de Privacidade</a>.
+    </p>
+  </div>
+</div>

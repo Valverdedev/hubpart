@@ -50,9 +50,8 @@ public class AppDbContext : IdentityDbContext<UsuarioApp, IdentityRole<Guid>, Gu
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<Estado> Estados => Set<Estado>();
     public DbSet<Municipio> Municipios => Set<Municipio>();
-
-    // Futuros agregados serão adicionados aqui:
-    // public DbSet<Cotacao> Cotacoes => Set<Cotacao>();
+    public DbSet<OnboardingRascunho> OnboardingRascunhos => Set<OnboardingRascunho>();
+    public DbSet<CotacaoUsoMensal> CotacaoUsoMensal => Set<CotacaoUsoMensal>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -68,6 +67,8 @@ public class AppDbContext : IdentityDbContext<UsuarioApp, IdentityRole<Guid>, Gu
         builder.ApplyConfiguration<Estado>(new EstadoMapping());
         builder.ApplyConfiguration<Municipio>(new MunicipioMapping());
         builder.ApplyConfiguration<Tenant>(tenantMapping);
+        builder.ApplyConfiguration<OnboardingRascunho>(new OnboardingRascunhoMapping());
+        builder.ApplyConfiguration<CotacaoUsoMensal>(new CotacaoUsoMensalMapping());
         builder.ApplyConfiguration<UsuarioApp>(identityMapping);
         builder.ApplyConfiguration<IdentityRole<Guid>>(identityMapping);
         builder.ApplyConfiguration<IdentityUserRole<Guid>>(identityMapping);

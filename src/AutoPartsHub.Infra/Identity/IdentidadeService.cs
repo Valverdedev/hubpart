@@ -53,7 +53,9 @@ public sealed class IdentidadeService(UserManager<UsuarioApp> userManager, IDate
         string senha,
         Guid tenantId,
         string role,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        string? telefone = null,
+        decimal limiteAprovacao = 0)
     {
         var existente = await userManager.FindByEmailAsync(email);
         if (existente is not null)
@@ -66,6 +68,8 @@ public sealed class IdentidadeService(UserManager<UsuarioApp> userManager, IDate
             NomeCompleto = nomeCompleto,
             Email = email,
             UserName = email,
+            Telefone = telefone,
+            LimiteAprovacao = limiteAprovacao
         };
 
         var resultado = await userManager.CreateAsync(usuario, senha);

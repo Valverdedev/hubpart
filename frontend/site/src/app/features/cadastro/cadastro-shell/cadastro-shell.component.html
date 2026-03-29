@@ -1,0 +1,58 @@
+<div class="cadastro-shell">
+  <!-- Sidebar / Progress -->
+  <aside class="shell-sidebar">
+    <div class="sidebar-inner">
+      <!-- Logo -->
+      <a class="logo" routerLink="/">
+        <span class="logo-icon">⚙</span>
+        <span class="logo-text">AutoPartsHub</span>
+      </a>
+
+      <!-- Progresso -->
+      <div class="progresso-wrapper">
+        <p class="label-sm progresso-label">Progresso do Cadastro</p>
+        <div class="progresso-bar">
+          <div class="progresso-fill" [style.width.%]="progressoPercent()"></div>
+        </div>
+        <span class="progresso-valor">{{ progressoPercent() }}%</span>
+      </div>
+
+      <!-- Etapas -->
+      <nav class="etapas-nav">
+        @for (etapa of etapas; track etapa.rota; let i = $index) {
+          <a
+            class="etapa-item"
+            [class.ativa]="etapaAtual() === i"
+            [class.concluida]="etapaAtual() > i"
+            routerLink="../{{ etapa.rota }}"
+          >
+            <span class="etapa-num">
+              @if (etapaAtual() > i) {
+                <mat-icon class="check-icon">check</mat-icon>
+              } @else {
+                {{ i + 1 }}
+              }
+            </span>
+            <span class="etapa-rotulo">{{ etapa.rotulo }}</span>
+          </a>
+        }
+      </nav>
+
+      <!-- Rodapé sidebar -->
+      <div class="sidebar-footer">
+        <p class="label-sm">Precisa de ajuda?</p>
+        <a href="mailto:suporte@autopartshub.com.br" class="link-suporte">
+          <mat-icon>headset_mic</mat-icon>
+          Falar com suporte
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Conteúdo principal -->
+  <main class="shell-main">
+    <div class="shell-content">
+      <router-outlet />
+    </div>
+  </main>
+</div>

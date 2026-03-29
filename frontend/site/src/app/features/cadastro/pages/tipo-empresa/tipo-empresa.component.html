@@ -1,0 +1,49 @@
+<div class="page-enter tipo-empresa">
+  <header class="page-header">
+    <p class="label-sm step-label">Etapa 1 de 5</p>
+    <h1 class="page-title">Tipo de Empresa</h1>
+    <p class="page-subtitle">
+      Selecione o enquadramento jurídico da sua empresa para adequarmos os documentos necessários.
+    </p>
+  </header>
+
+  <div class="tipos-grid">
+    @for (opcao of opcoes; track opcao.tipo) {
+      <button
+        matRipple
+        class="tipo-card"
+        [class.selecionado]="tipoSelecionado() === opcao.tipo"
+        (click)="selecionar(opcao.tipo)"
+        [attr.aria-pressed]="tipoSelecionado() === opcao.tipo"
+      >
+        <div class="tipo-header">
+          <div class="tipo-badge">{{ opcao.tipo }}</div>
+          @if (tipoSelecionado() === opcao.tipo) {
+            <mat-icon class="icon-check">check_circle</mat-icon>
+          }
+        </div>
+        <h3 class="tipo-nome">{{ opcao.nome }}</h3>
+        <p class="tipo-desc">{{ opcao.descricao }}</p>
+        <div class="tipo-receita">
+          <mat-icon>trending_up</mat-icon>
+          <span>{{ opcao.limiteReceita }}</span>
+        </div>
+      </button>
+    }
+  </div>
+
+  <div class="page-actions">
+    <button class="btn-voltar" (click)="voltar()">
+      <mat-icon>arrow_back</mat-icon>
+      Voltar
+    </button>
+    <button
+      class="btn-primary-gradient btn-continuar"
+      [disabled]="!tipoSelecionado()"
+      (click)="continuar()"
+    >
+      Continuar
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
+</div>
