@@ -11,15 +11,24 @@ namespace AutoPartsHub.Application.Auth.Commands;
 
 /// <summary>
 /// Registra um novo usuário vinculado a um tenant.
-/// Usado para criação de conta via API — não expõe senha em texto plano na resposta.
+/// TenantId é obrigatório, mas nunca vem do body HTTP — o controller o injeta a partir do
+/// JWT do Admin autenticado, evitando criação cross-tenant.
 /// </summary>
 public record RegistroCommand(
     string NomeCompleto,
     string Email,
     string Senha,
-    Guid TenantId,
+    Guid TenantId,  // preenchido pelo controller via ITenantContext — não expor no body
     string Role
 ) : ICommand<Guid>;
+
+/// <summary>Payload recebido do body. Sem TenantId — vem sempre do JWT.</summary>
+public record RegistroInput(
+    string NomeCompleto,
+    string Email,
+    string Senha,
+    string Role
+);
 
 // ---------------------------------------------------------------------------
 // Validator
@@ -44,6 +53,7 @@ public sealed class RegistroCommandValidator : AbstractValidator<RegistroCommand
             .Matches(@"[a-z]").WithMessage("senha_requer_minuscula")
             .Matches(@"[0-9]").WithMessage("senha_requer_numero");
 
+        // TenantId é injetado pelo controller (JWT) — validado internamente no handler
         RuleFor(c => c.TenantId)
             .NotEmpty().WithMessage("tenant_obrigatorio");
 

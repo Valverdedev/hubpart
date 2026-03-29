@@ -15,16 +15,15 @@ public static class ResultExtensions
     }
 
     /// <summary>
-    /// Converte Result&lt;T&gt; em 201 Created (com Location) ou 422 Unprocessable.
+    /// Converte Result&lt;T&gt; em 201 Created ou 422 Unprocessable.
     /// </summary>
     public static IActionResult ParaActionResultCriado<T>(
         this Result<T> resultado,
         ControllerBase controller,
-        string nomeRota,
-        Func<T, object> obterRotaValores)
+        Func<T, object> obterCorpo)
     {
         if (resultado.IsSuccess)
-            return controller.CreatedAtRoute(nomeRota, obterRotaValores(resultado.Value), new { id = resultado.Value });
+            return controller.Created(string.Empty, obterCorpo(resultado.Value));
 
         return controller.UnprocessableEntity(new { erros = resultado.Errors.Select(e => e.Message) });
     }

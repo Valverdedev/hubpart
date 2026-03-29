@@ -37,6 +37,6 @@ public sealed class TenantController(ISender sender) : ControllerBase
     public async Task<IActionResult> CadastrarTenant([FromBody] CadastrarTenantCommand command, CancellationToken ct)
     {
         var resultado = await sender.Send(command, ct);
-        return resultado.ParaActionResultCriado(this, "ObterTenant", dto => new { id = dto.Id });
+        return resultado.ParaActionResultCriado(this, dto => new { id = dto.Id });
     }
 }

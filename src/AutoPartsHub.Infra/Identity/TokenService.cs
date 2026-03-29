@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using AutoPartsHub.Application.Interfaces;
+using AutoPartsHub.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,7 +13,7 @@ namespace AutoPartsHub.Infra.Identity;
 /// Implementação de ITokenService. Gera JWTs e refresh tokens.
 /// Reside em Infra para isolar dependências de JWT e IConfiguration da camada Application.
 /// </summary>
-public sealed class TokenService(IConfiguration configuracao) : ITokenService
+public sealed class TokenService(IConfiguration configuracao, IDateTimeProvider dateTime) : ITokenService
 {
     public (string Token, DateTime ExpiraEm) GerarJwt(
         Guid usuarioId,
@@ -28,7 +29,8 @@ public sealed class TokenService(IConfiguration configuracao) : ITokenService
         var credenciais = new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);
 
         var minutosExpiracao = configuracao.GetValue<int>("Jwt:ExpiresInMinutes", 60);
-        var expiraEm = DateTime.UtcNow.AddMinutes(minutosExpiracao);
+        var agora = dateTime.UtcNow;
+        var expiraEm = agora.AddMinutes(minutosExpiracao);
 
         // Claims obrigatórias conforme CLAUDE.md: sub, tenant_id, role, email
         var claims = new List<Claim>
@@ -46,7 +48,7 @@ public sealed class TokenService(IConfiguration configuracao) : ITokenService
             issuer: configuracao["Jwt:Issuer"],
             audience: configuracao["Jwt:Audience"],
             claims: claims,
-            notBefore: DateTime.UtcNow,
+            notBefore: agora,
             expires: expiraEm,
             signingCredentials: credenciais
         );

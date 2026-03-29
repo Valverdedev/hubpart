@@ -1,4 +1,5 @@
 using AutoPartsHub.Application.Interfaces;
+using AutoPartsHub.Domain.Interfaces;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,7 +10,7 @@ namespace AutoPartsHub.Infra.Identity;
 /// Encapsula toda a lógica de Identity para que a camada Application não referencie frameworks
 /// de infraestrutura diretamente.
 /// </summary>
-public sealed class IdentidadeService(UserManager<UsuarioApp> userManager) : IIdentidadeService
+public sealed class IdentidadeService(UserManager<UsuarioApp> userManager, IDateTimeProvider dateTime) : IIdentidadeService
 {
     public async Task<UsuarioDto?> BuscarPorEmailAsync(string email, CancellationToken ct = default)
     {
@@ -42,7 +43,7 @@ public sealed class IdentidadeService(UserManager<UsuarioApp> userManager) : IId
         var usuario = await userManager.FindByIdAsync(usuarioId.ToString());
         if (usuario is null) return;
 
-        usuario.UltimoLoginEm = DateTime.UtcNow;
+        usuario.UltimoLoginEm = dateTime.UtcNow;
         await userManager.UpdateAsync(usuario);
     }
 
@@ -77,6 +78,8 @@ public sealed class IdentidadeService(UserManager<UsuarioApp> userManager) : IId
         var resultadoRole = await userManager.AddToRoleAsync(usuario, role);
         if (!resultadoRole.Succeeded)
         {
+            // Rollback: remover usuário criado para evitar estado parcial (sem role atribuída)
+            await userManager.DeleteAsync(usuario);
             var erros = resultadoRole.Errors.Select(e => e.Description);
             return Result.Fail<Guid>(string.Join(" | ", erros));
         }

@@ -1,4 +1,5 @@
 using AutoPartsHub.Domain.Enums;
+using AutoPartsHub.Domain.Interfaces;
 using AutoPartsHub.Domain.ValueObjects;
 
 namespace AutoPartsHub.Domain.Entidades;
@@ -67,7 +68,8 @@ public sealed class Tenant : EntidadeBase
         Email email,
         IEnumerable<Telefone> telefones,
         TipoTenant tipo,
-        Endereco endereco)
+        Endereco endereco,
+        IDateTimeProvider dateTime)
     {
         return new Tenant(
             razaoSocial,
@@ -78,7 +80,7 @@ public sealed class Tenant : EntidadeBase
             tipo,
             StatusTenant.Ativo,
             PlanoTenant.Free,
-            DateTime.UtcNow.AddDays(30),
+            dateTime.UtcNow.AddDays(30),
             endereco);
     }
 
@@ -93,7 +95,8 @@ public sealed class Tenant : EntidadeBase
         Cnpj cnpj,
         Email email,
         IEnumerable<Telefone> telefones,
-        Endereco endereco)
+        Endereco endereco,
+        IDateTimeProvider dateTime)
     {
         return new Tenant(
             razaoSocial,
@@ -104,7 +107,7 @@ public sealed class Tenant : EntidadeBase
             TipoTenant.Fornecedor,
             StatusTenant.AguardandoAprovacao,
             PlanoTenant.Free,
-            DateTime.UtcNow.AddDays(30),
+            dateTime.UtcNow.AddDays(30),
             endereco);
     }
 

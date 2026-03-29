@@ -8,7 +8,8 @@ using FluentResults;
 namespace AutoPartsHub.Application.Tenants.Commands;
 
 public sealed class CadastrarTenantCommandHandler(
-    ITenantRepository tenantRepository
+    ITenantRepository tenantRepository,
+    IDateTimeProvider dateTime
 ) : ICommandHandler<CadastrarTenantCommand, CadastrarTenantResultadoDto>
 {
     public async Task<Result<CadastrarTenantResultadoDto>> Handle(
@@ -58,7 +59,8 @@ public sealed class CadastrarTenantCommandHandler(
                 cnpjResult.Value,
                 emailResult.Value,
                 telefones,
-                endereco)
+                endereco,
+                dateTime)
             : Tenant.CriarComprador(
                 command.RazaoSocial,
                 command.NomeFantasia,
@@ -66,7 +68,8 @@ public sealed class CadastrarTenantCommandHandler(
                 emailResult.Value,
                 telefones,
                 tipo,
-                endereco);
+                endereco,
+                dateTime);
 
         // 4. Persistir
         await tenantRepository.AdicionarAsync(tenant, ct);
