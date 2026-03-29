@@ -1,5 +1,6 @@
 using AutoPartsHub.Domain.Entidades;
 using AutoPartsHub.Domain.Interfaces;
+using AutoPartsHub.Infra.Identity;
 using AutoPartsHub.Infra.Persistencia.Mappings;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -36,13 +37,22 @@ public class AppDbContext : IdentityDbContext<UsuarioApp, IdentityRole<Guid>, Gu
         _dateTime = dateTime;
     }
 
+    /// <summary>
+    /// Expõe o TenantId da request atual para uso nos Global Query Filters.
+    /// A lambda do HasQueryFilter captura esta instância (scoped por request),
+    /// evitando que o EF Core cache o valor do primeiro request para todos os demais.
+    /// </summary>
+    public Guid TenantIdAtual => _tenantContext.TenantId;
+
     // --- DbSets principais ---
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<Estado> Estados => Set<Estado>();
+    public DbSet<Municipio> Municipios => Set<Municipio>();
 
     // Futuros agregados serão adicionados aqui:
     // public DbSet<Cotacao> Cotacoes => Set<Cotacao>();
-    // public DbSet<Fornecedor> Fornecedores => Set<Fornecedor>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -52,8 +62,12 @@ public class AppDbContext : IdentityDbContext<UsuarioApp, IdentityRole<Guid>, Gu
         // Instância manual necessária pois IdentityMapping recebe ITenantContext via construtor.
         // ApplyConfiguration<T> não infere o tipo quando a classe implementa múltiplas interfaces,
         // por isso cada entidade é registrada explicitamente com a mesma instância.
-        var identityMapping = new IdentityMapping(_tenantContext);
+        var identityMapping = new IdentityMapping(this);
+        var tenantMapping = new TenantMapping(this);
 
+        builder.ApplyConfiguration<Estado>(new EstadoMapping());
+        builder.ApplyConfiguration<Municipio>(new MunicipioMapping());
+        builder.ApplyConfiguration<Tenant>(tenantMapping);
         builder.ApplyConfiguration<UsuarioApp>(identityMapping);
         builder.ApplyConfiguration<IdentityRole<Guid>>(identityMapping);
         builder.ApplyConfiguration<IdentityUserRole<Guid>>(identityMapping);

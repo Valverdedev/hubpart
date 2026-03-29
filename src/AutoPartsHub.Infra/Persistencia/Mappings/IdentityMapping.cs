@@ -1,5 +1,6 @@
 using AutoPartsHub.Domain.Entidades;
-using AutoPartsHub.Domain.Interfaces;
+using AutoPartsHub.Infra.Identity;
+using AutoPartsHub.Infra.Persistencia;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -23,11 +24,11 @@ public sealed class IdentityMapping :
     IEntityTypeConfiguration<IdentityUserToken<Guid>>,
     IEntityTypeConfiguration<RefreshToken>
 {
-    private readonly ITenantContext _tenantContext;
+    private readonly AppDbContext _dbContext;
 
-    public IdentityMapping(ITenantContext tenantContext)
+    public IdentityMapping(AppDbContext dbContext)
     {
-        _tenantContext = tenantContext;
+        _dbContext = dbContext;
     }
 
     public void Configure(EntityTypeBuilder<UsuarioApp> builder)
@@ -119,15 +120,15 @@ public sealed class IdentityMapping :
         builder.ToTable("refresh_tokens");
 
         // Colunas base (id, tenant_id, criado_em, atualizado_em, excluido_em) + query filter tenant + soft-delete
-        EntidadeBaseMapping.AplicarColunasPadrao(builder, _tenantContext);
+        EntidadeBaseMapping.AplicarColunasPadrao(builder, _dbContext);
 
-        builder.Property(rt => rt.Token).HasColumnName("token").IsRequired().HasMaxLength(512);
+        builder.Property(rt => rt.TokenHash).HasColumnName("token_hash").IsRequired().HasMaxLength(64);
         builder.Property(rt => rt.UsuarioId).HasColumnName("usuario_id");
         builder.Property(rt => rt.ExpiraEm).HasColumnName("expira_em");
         builder.Property(rt => rt.UsadoEm).HasColumnName("usado_em");
         builder.Property(rt => rt.Revogado).HasColumnName("revogado");
 
-        builder.HasIndex(rt => rt.Token).IsUnique();
+        builder.HasIndex(rt => rt.TokenHash).IsUnique().HasDatabaseName("ux_refresh_tokens_token_hash");
         builder.HasIndex(rt => new { rt.UsuarioId, rt.Revogado });
 
         // FK para UsuarioApp
