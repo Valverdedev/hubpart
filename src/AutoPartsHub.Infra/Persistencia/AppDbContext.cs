@@ -39,10 +39,12 @@ public class AppDbContext : IdentityDbContext<UsuarioApp, IdentityRole<Guid>, Gu
     // --- DbSets principais ---
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<Estado> Estados => Set<Estado>();
+    public DbSet<Municipio> Municipios => Set<Municipio>();
 
     // Futuros agregados serão adicionados aqui:
     // public DbSet<Cotacao> Cotacoes => Set<Cotacao>();
-    // public DbSet<Fornecedor> Fornecedores => Set<Fornecedor>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -53,7 +55,11 @@ public class AppDbContext : IdentityDbContext<UsuarioApp, IdentityRole<Guid>, Gu
         // ApplyConfiguration<T> não infere o tipo quando a classe implementa múltiplas interfaces,
         // por isso cada entidade é registrada explicitamente com a mesma instância.
         var identityMapping = new IdentityMapping(_tenantContext);
+        var tenantMapping = new TenantMapping(_tenantContext);
 
+        builder.ApplyConfiguration<Estado>(new EstadoMapping());
+        builder.ApplyConfiguration<Municipio>(new MunicipioMapping());
+        builder.ApplyConfiguration<Tenant>(tenantMapping);
         builder.ApplyConfiguration<UsuarioApp>(identityMapping);
         builder.ApplyConfiguration<IdentityRole<Guid>>(identityMapping);
         builder.ApplyConfiguration<IdentityUserRole<Guid>>(identityMapping);

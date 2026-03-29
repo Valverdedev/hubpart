@@ -1,4 +1,5 @@
 using AutoPartsHub.API.Endpoints.Auth;
+using AutoPartsHub.API.Endpoints.Tenants;
 using AutoPartsHub.API.Extensions;
 using AutoPartsHub.Application.Auth.Commands;
 using AutoPartsHub.Application.Common;
@@ -7,6 +8,7 @@ using AutoPartsHub.Infra.Common;
 using AutoPartsHub.Infra.Identity;
 using AutoPartsHub.Infra.Persistencia;
 using AutoPartsHub.Infra.Repositorios;
+using AutoPartsHub.Infra.Integracoes;
 using FluentResults;
 using FluentValidation;
 using MediatR;
@@ -14,8 +16,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- OpenAPI ---
-builder.Services.AddOpenApi();
+// --- OpenAPI + Scalar ---
+builder.Services.AdicionarOpenApi();
 
 // --- Infraestrutura de contexto (deve vir antes do DbContext) ---
 builder.Services.AddHttpContextAccessor();
@@ -43,6 +45,11 @@ builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
 
 // --- Repositórios ---
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+
+// --- Integrações externas ---
+// TODO: substituir pelo cliente real da Receita Federal quando implementado
+builder.Services.AddScoped<ICnpjService, CnpjServiceStub>();
 
 // --- Pipeline behaviors (ordem importa: Logging → Validação → Handler) ---
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
@@ -52,7 +59,7 @@ var app = builder.Build();
 
 // --- Middlewares ---
 if (app.Environment.IsDevelopment())
-    app.MapOpenApi();
+    app.UsarScalar();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
@@ -62,6 +69,10 @@ app.UseAuthorization();
 app.MaparRegistro();
 app.MaparLogin();
 app.MaparRefreshToken();
+
+// --- Endpoints de tenants ---
+app.MaparConsultarCnpj();
+app.MaparCadastrarTenant();
 
 app.Run();
 
