@@ -1,5 +1,4 @@
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.RateLimiting;
 using AutoPartsHub.API.Extensions;
 using AutoPartsHub.Application.Auth.Commands;
 using AutoPartsHub.Application.Common;
@@ -8,66 +7,83 @@ using AutoPartsHub.Domain.Interfaces;
 using AutoPartsHub.Infra.Common;
 using AutoPartsHub.Infra.Identity;
 using AutoPartsHub.Infra.Integracoes;
+using AutoPartsHub.Infra.Jobs;
 using AutoPartsHub.Infra.Persistencia;
 using AutoPartsHub.Infra.Repositorios;
+using AutoPartsHub.Infra.Servicos;
 using FluentValidation;
+using Hangfire;
+using Hangfire.PostgreSql;
 using MediatR;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Controllers + OpenAPI ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AdicionarSwagger();
 
-// --- Infraestrutura de contexto (deve vir antes do DbContext) ---
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddScoped<IUsuarioAtual, UsuarioAtual>();
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
-// --- Banco de dados ---
 builder.Services.AddDbContext<AppDbContext>(opcoes =>
 {
     opcoes.UseNpgsql(builder.Configuration.GetConnectionString("Default"))
           .UseSnakeCaseNamingConvention();
 });
 
-// --- Identity + JWT ---
 builder.Services.AdicionarIdentity(builder.Configuration);
 
-// --- CQRS com MediatR ---
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(LoginCommand).Assembly));
 
-// --- Validação com FluentValidation ---
 builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
 
-// --- Repositórios ---
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<ILocalizacaoRepository, LocalizacaoRepository>();
+builder.Services.AddScoped<IOnboardingRascunhoRepository, OnboardingRascunhoRepository>();
+builder.Services.AddScoped<ICotacaoUsoMensalRepository, CotacaoUsoMensalRepository>();
 
-// --- Serviços de identidade e tokens ---
 builder.Services.AddScoped<IIdentidadeService, IdentidadeService>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
-// --- Serviços de domínio ---
 builder.Services.AddScoped<ILocalizacaoService, LocalizacaoService>();
 
-// --- Integrações externas ---
-builder.Services.AddHttpClient<ICnpjService, CnpjService>(c =>
+builder.Services.AddScoped<IEmailService, MockEmailService>();
+builder.Services.AddScoped<ICacheService, RedisCacheService>();
+
+builder.Services.AddStackExchangeRedisCache(opcoes =>
 {
-    c.BaseAddress = new Uri("https://open.cnpja.com/");
+    opcoes.Configuration = builder.Configuration.GetSection("Redis")["ConnectionString"] ?? "localhost:6379";
+});
+
+builder.Services.AddHttpClient<ICnpjService, ReceitaWsCnpjService>(c =>
+{
+    c.BaseAddress = new Uri("https://receitaws.com.br/v1/");
     c.Timeout = TimeSpan.FromSeconds(10);
 });
 
-// --- Pipeline behaviors (ordem importa: Logging → Validação → Handler) ---
+builder.Services.AddHttpClient<ICepService, ViaCepService>(c =>
+{
+    c.BaseAddress = new Uri("https://viacep.com.br/");
+    c.Timeout = TimeSpan.FromSeconds(10);
+});
+
+var connectionString = builder.Configuration.GetConnectionString("Default")
+                      ?? throw new InvalidOperationException("ConnectionStrings:Default nao configurada.");
+
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
+builder.Services.AddHangfireServer();
+builder.Services.AddScoped<ExpirarTrialJob>();
+
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidacaoBehavior<,>));
 
-// --- Rate limiting (proteção anti-abuso nos endpoints anônimos de auth) ---
 builder.Services.AddRateLimiter(opcoes =>
 {
     opcoes.AddFixedWindowLimiter("auth", limiter =>
@@ -78,12 +94,33 @@ builder.Services.AddRateLimiter(opcoes =>
         limiter.QueueLimit = 0;
     });
 
+    opcoes.AddPolicy("onboarding-cnpj", contexto =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            contexto.Connection.RemoteIpAddress?.ToString() ?? "anon",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 30,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            }));
+
+    opcoes.AddPolicy("onboarding-cep", contexto =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            contexto.Connection.RemoteIpAddress?.ToString() ?? "anon",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 60,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            }));
+
     opcoes.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
 var app = builder.Build();
 
-// --- Middlewares ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -99,19 +136,18 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseHangfireDashboard("/hangfire");
+
 app.MapControllers();
+
+RecurringJob.AddOrUpdate<ExpirarTrialJob>(
+    "expirar-trial",
+    job => job.ExecutarAsync(),
+    "0 2 * * *",
+    new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
 
 app.Run();
 
-// ---------------------------------------------------------------------------
-// Pipeline behavior para validação automática via FluentValidation
-// ---------------------------------------------------------------------------
-
-/// <summary>
-/// Intercepta todos os commands/queries e executa os validators antes do handler.
-/// Quando TResponse é Result ou Result&lt;T&gt;, retorna Result.Fail com as mensagens
-/// de validação — nunca lança exceção (regra do CLAUDE.md).
-/// </summary>
 internal sealed class ValidacaoBehavior<TRequest, TResponse>(
     IEnumerable<IValidator<TRequest>> validadores
 ) : IPipelineBehavior<TRequest, TResponse>

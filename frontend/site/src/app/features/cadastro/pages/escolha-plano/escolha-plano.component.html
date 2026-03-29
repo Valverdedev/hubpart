@@ -1,0 +1,116 @@
+<div class="page-enter escolha-plano">
+  <header class="page-header">
+    <p class="label-sm step-label">Etapa 4 de 5</p>
+    <h1 class="page-title">Escolha seu Plano</h1>
+    <p class="page-subtitle">
+      Comece grátis por 30 dias. Sem cartão de crédito necessário para o Trial.
+    </p>
+
+    <!-- Toggle mensal/anual -->
+    <div class="ciclo-toggle">
+      <mat-button-toggle-group
+        [(value)]="cicloSelecionado"
+        id="toggle-ciclo-pagamento"
+        aria-label="Ciclo de pagamento"
+      >
+        <mat-button-toggle value="MENSAL" id="toggle-mensal">Mensal</mat-button-toggle>
+        <mat-button-toggle value="ANUAL" id="toggle-anual">
+          Anual
+          <span class="badge-economia">-20%</span>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </header>
+
+  <!-- Grid de planos -->
+  <div class="planos-grid">
+    @for (plano of planos; track plano.tipo) {
+      <div
+        class="plano-card"
+        [class.destaque]="plano.destaque"
+        [class.selecionado]="planoSelecionado() === plano.tipo"
+      >
+        @if (plano.labelBadge) {
+          <div class="plano-badge-top">{{ plano.labelBadge }}</div>
+        }
+
+        <div class="plano-header">
+          <h3 class="plano-nome">{{ plano.nome }}</h3>
+          <div class="plano-preco">
+            @if (plano.preco === null) {
+              <span class="preco-gratis">Grátis</span>
+              <span class="preco-periodo">por 30 dias</span>
+            } @else {
+              <span class="preco-valor">
+                R$ {{ precoExibido(plano) | number: '1.0-0' }}
+              </span>
+              <span class="preco-periodo">/mês</span>
+            }
+          </div>
+          @if (cicloSelecionado === 'ANUAL' && plano.precoAnual) {
+            <p class="preco-faturado">
+              Faturado R$ {{ plano.precoAnual * 12 | number: '1.0-0' }}/ano
+            </p>
+          }
+        </div>
+
+        <ul class="plano-recursos">
+          <li class="recurso-destaque">
+            <mat-icon>bolt</mat-icon>
+            <span>
+              @if (plano.cotacoesMes === 'Ilimitado') {
+                Cotações ilimitadas
+              } @else {
+                {{ plano.cotacoesMes }} cotações/mês
+              }
+            </span>
+          </li>
+          <li class="recurso-destaque recurso-comissao">
+            <mat-icon>percent</mat-icon>
+            <span>{{ plano.comissao }} de comissão</span>
+          </li>
+          @for (recurso of plano.recursos; track recurso) {
+            <li class="recurso-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>{{ recurso }}</span>
+            </li>
+          }
+        </ul>
+
+        <button
+          matRipple
+          class="btn-selecionar"
+          [class.selecionado]="planoSelecionado() === plano.tipo"
+          [class.destaque-btn]="plano.destaque"
+          (click)="selecionarPlano(plano.tipo)"
+          [attr.id]="'btn-plano-' + plano.tipo.toLowerCase()"
+        >
+          @if (planoSelecionado() === plano.tipo) {
+            <mat-icon>check</mat-icon>
+            Plano selecionado
+          } @else if (plano.preco === null) {
+            Começar grátis
+          } @else {
+            Escolher plano
+          }
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Ações -->
+  <div class="page-actions">
+    <button class="btn-voltar" (click)="voltar()">
+      <mat-icon>arrow_back</mat-icon>
+      Voltar
+    </button>
+    <button
+      class="btn-primary-gradient btn-continuar"
+      [disabled]="!planoSelecionado()"
+      (click)="continuar()"
+    >
+      Confirmar e Finalizar
+      <mat-icon>task_alt</mat-icon>
+    </button>
+  </div>
+</div>

@@ -22,5 +22,7 @@ public interface IIdentidadeService
         string senha,
         Guid tenantId,
         string role,
-        CancellationToken ct = default);
+        CancellationToken ct = default,
+        string? telefone = null,
+        decimal limiteAprovacao = 0);
 }

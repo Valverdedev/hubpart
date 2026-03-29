@@ -64,6 +64,70 @@ public sealed class TenantMapping : IEntityTypeConfiguration<Tenant>
         builder.Property(t => t.Longitude)
             .HasColumnName("longitude");
 
+        // --- Campos de onboarding do comprador ---
+
+        builder.Property(t => t.TipoComprador)
+            .HasColumnName("tipo_comprador")
+            .HasConversion<string>()
+            .HasMaxLength(40);
+
+        builder.Property(t => t.PlanoAtual)
+            .HasColumnName("plano_atual")
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        builder.Property(t => t.StatusAssinatura)
+            .HasColumnName("assinatura_status")
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        builder.Property(t => t.TrialExpiraEmNovo)
+            .HasColumnName("trial_expira_em_novo");
+
+        builder.Property(t => t.CotacoesLimiteMes)
+            .HasColumnName("cotacoes_limite_mes");
+
+        builder.Property(t => t.UsuariosLimite)
+            .HasColumnName("usuarios_limite");
+
+        builder.Property(t => t.InscricaoEstadual)
+            .HasColumnName("inscricao_estadual")
+            .HasMaxLength(30);
+
+        builder.Property(t => t.TelefoneComercial)
+            .HasColumnName("telefone_comercial")
+            .HasMaxLength(20);
+
+        builder.Property(t => t.ComoNosConheceu)
+            .HasColumnName("como_nos_conheceu")
+            .HasMaxLength(40);
+
+        builder.Property(t => t.DescricaoOutro)
+            .HasColumnName("descricao_outro");
+
+        builder.Property(t => t.SegmentoFrota)
+            .HasColumnName("segmento_frota")
+            .HasMaxLength(40);
+
+        builder.Property(t => t.QtdVeiculosEstimada)
+            .HasColumnName("qtd_veiculos_estimada");
+
+        builder.Property(t => t.LimiteAprovacaoAdmin)
+            .HasColumnName("limite_aprovacao_admin")
+            .HasPrecision(18, 2);
+
+        // Value Object: EnderecoSimples → colunas com prefixo "endereco_"
+        builder.OwnsOne(t => t.EnderecoSimples, end =>
+        {
+            end.Property(e => e.Cep).HasColumnName("endereco_cep").HasMaxLength(9);
+            end.Property(e => e.Logradouro).HasColumnName("endereco_logradouro").HasMaxLength(200);
+            end.Property(e => e.Numero).HasColumnName("endereco_numero").HasMaxLength(20);
+            end.Property(e => e.Complemento).HasColumnName("endereco_complemento").HasMaxLength(100);
+            end.Property(e => e.Bairro).HasColumnName("endereco_bairro").HasMaxLength(100);
+            end.Property(e => e.Cidade).HasColumnName("endereco_cidade").HasMaxLength(100);
+            end.Property(e => e.Estado).HasColumnName("endereco_estado").HasMaxLength(2);
+        });
+
         // Value Object: Cnpj → coluna única "cnpj"
         builder.OwnsOne(t => t.Cnpj, cnpj =>
         {
@@ -91,7 +155,7 @@ public sealed class TenantMapping : IEntityTypeConfiguration<Tenant>
                 .HasMaxLength(256);
         });
 
-        // Value Object: Endereco → colunas com prefixo "end_"
+        // Value Object: Endereco (legado com CodigoIbge) → colunas com prefixo "end_"
         builder.OwnsOne(t => t.Endereco, end =>
         {
             end.Property(e => e.Cep).HasColumnName("end_cep").HasMaxLength(8);
