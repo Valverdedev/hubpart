@@ -1,0 +1,466 @@
+<div class="landing">
+
+  <!-- ══ NavBar ══════════════════════════════════════════════════════ -->
+  <nav class="navbar" [class.navbar--scrolled]="navScrolled()" role="navigation" aria-label="Menu principal">
+    <div class="navbar__inner">
+      <!-- Logo -->
+      <a class="navbar__logo" routerLink="/" aria-label="AutoPartsHub — Início">
+        <span class="logo-mark">AutoParts</span><span class="logo-hub">Hub</span>
+      </a>
+
+      <!-- Links -->
+      <ul class="navbar__links" role="list">
+        <li><button class="nav-link" (click)="scrollTo('como-funciona')">Como Funciona</button></li>
+        <li><button class="nav-link" (click)="scrollTo('planos')">Planos</button></li>
+        <li><button class="nav-link" (click)="scrollTo('faq')">FAQ</button></li>
+      </ul>
+
+      <!-- CTAs -->
+      <div class="navbar__actions">
+        <a class="btn-nav-ghost" routerLink="/app/login" id="btn-nav-login">Login</a>
+        <a class="btn-nav-primary" routerLink="/cadastro" id="btn-nav-cta">Começar Agora</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ Hero ════════════════════════════════════════════════════════ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__inner">
+      <div class="hero__kicker">
+        <span class="kicker-dot"></span>
+        Cotação de peças em tempo real
+      </div>
+
+      <h1 class="hero__title" id="hero-title">
+        Chega de ligar para cada<br />fornecedor para cotar<br />
+        <em class="hero__title-highlight">a mesma peça.</em>
+      </h1>
+
+      <p class="hero__subtitle">
+        AutoPartsHub conecta oficinas, frotas e revendas num único ecossistema digital.
+        Eficiência para quem compra, inteligência para quem vende.
+      </p>
+
+      <div class="hero__ctas">
+        <a class="btn-primary" routerLink="/cadastro" id="btn-hero-comprador">
+          <span class="btn-icon">⚙</span>
+          Quero comprar peças
+        </a>
+        <a class="btn-outline-white" routerLink="/cadastro" id="btn-hero-fornecedor">
+          Quero vender peças
+        </a>
+      </div>
+
+      <!-- Métricas -->
+      <div class="hero__metrics" role="list" aria-label="Métricas da plataforma">
+        @for (m of metricas; track m.rotulo) {
+          <div class="metric" role="listitem">
+            <span class="metric__valor">{{ m.valor }}</span>
+            <span class="metric__rotulo">{{ m.rotulo }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Decoração geométrica -->
+    <div class="hero__deco hero__deco--1" aria-hidden="true"></div>
+    <div class="hero__deco hero__deco--2" aria-hidden="true"></div>
+  </section>
+
+  <!-- ══ Parceiros ═══════════════════════════════════════════════════ -->
+  <section class="parceiros" aria-label="Marcas parceiras">
+    <div class="container">
+      <p class="parceiros__label">Peças das marcas que o mercado confia</p>
+      <div class="parceiros__logos" role="list">
+        @for (p of parceiros; track p) {
+          <span class="parceiro-nome" role="listitem">{{ p }}</span>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ O Problema ══════════════════════════════════════════════════ -->
+  <section class="problema" aria-labelledby="problema-title">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">O Desafio Industrial</span>
+        <h2 class="section-title" id="problema-title">
+          O processo manual está matando<br />sua margem.
+        </h2>
+      </div>
+
+      <div class="problema__grid">
+        @for (card of problemasCards; track card.titulo) {
+          <article class="problema-card">
+            <div class="problema-card__icon" aria-hidden="true">
+              <span class="material-icon">{{ card.icone }}</span>
+            </div>
+            <h3 class="problema-card__titulo">{{ card.titulo }}</h3>
+            <p class="problema-card__desc">{{ card.desc }}</p>
+          </article>
+        }
+      </div>
+
+      <!-- Banner CTA -->
+      <div class="problema__banner">
+        <div class="banner__texto">
+          <h3 class="banner__titulo">A Solução Hub</h3>
+          <p class="banner__sub">Um clique. Múltiplos orçamentos. Zero fricção.</p>
+        </div>
+        <a class="btn-primary" routerLink="/cadastro" id="btn-problema-cta">
+          Conhecer Plataforma
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Como Funciona ═══════════════════════════════════════════════ -->
+  <section class="como-funciona" id="como-funciona" aria-labelledby="como-title">
+    <div class="container">
+      <div class="section-header section-header--center">
+        <h2 class="section-title" id="como-title">Como Funciona</h2>
+      </div>
+
+      <!-- Toggle tabs -->
+      <div class="tab-toggle" role="tablist" aria-label="Para quem é a solução">
+        <button
+          class="tab-btn"
+          [class.tab-btn--active]="tabAtiva() === 'compradores'"
+          role="tab"
+          [attr.aria-selected]="tabAtiva() === 'compradores'"
+          (click)="setTab('compradores')"
+          id="tab-compradores"
+        >
+          Para compradores
+        </button>
+        <button
+          class="tab-btn"
+          [class.tab-btn--active]="tabAtiva() === 'fornecedores'"
+          role="tab"
+          [attr.aria-selected]="tabAtiva() === 'fornecedores'"
+          (click)="setTab('fornecedores')"
+          id="tab-fornecedores"
+        >
+          Para fornecedores
+        </button>
+      </div>
+
+      <!-- Passos -->
+      <div class="passos-timeline" role="tabpanel" [attr.aria-labelledby]="'tab-' + tabAtiva()">
+        @if (tabAtiva() === 'compradores') {
+          @for (passo of passosCompradores; track passo.titulo; let i = $index) {
+            <div class="passo">
+              <div class="passo__num" [class.passo__num--ativo]="i === 0" aria-hidden="true">{{ i + 1 }}</div>
+              <div class="passo__conteudo">
+                <span class="passo__tag">{{ passo.tag }}</span>
+                <h3 class="passo__titulo">{{ passo.titulo }}</h3>
+                <p class="passo__desc">{{ passo.desc }}</p>
+              </div>
+            </div>
+          }
+        } @else {
+          @for (passo of passosFornecedores; track passo.titulo; let i = $index) {
+            <div class="passo">
+              <div class="passo__num" [class.passo__num--ativo]="i === 0" aria-hidden="true">{{ i + 1 }}</div>
+              <div class="passo__conteudo">
+                <span class="passo__tag">{{ passo.tag }}</span>
+                <h3 class="passo__titulo">{{ passo.titulo }}</h3>
+                <p class="passo__desc">{{ passo.desc }}</p>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Audiências ══════════════════════════════════════════════════ -->
+  <section class="audiencias" aria-labelledby="audiencias-title">
+    <div class="container">
+      <div class="section-header section-header--center">
+        <h2 class="section-title" id="audiencias-title">Feito para o ecossistema.</h2>
+      </div>
+
+      <div class="audiencias__grid">
+        <article class="audiencia-card">
+          <div class="audiencia-card__icon audiencia-card__icon--oficina" aria-hidden="true">🔧</div>
+          <h3 class="audiencia-card__titulo">Oficina Mecânica</h3>
+          <ul class="audiencia-card__lista" role="list">
+            <li>Liberte seus mecânicos do telefone</li>
+            <li>Histórico de compras digitalizado</li>
+            <li>Acesso a marcas premium e econômicas</li>
+          </ul>
+          <a class="btn-secondary" routerLink="/cadastro" id="btn-oficina-cta">Começar grátis</a>
+        </article>
+
+        <article class="audiencia-card audiencia-card--destaque">
+          <div class="audiencia-card__icon audiencia-card__icon--frota" aria-hidden="true">🚛</div>
+          <h3 class="audiencia-card__titulo">Frotistas</h3>
+          <ul class="audiencia-card__lista" role="list">
+            <li>Redução drástica no TCO</li>
+            <li>Controle centralizado de múltiplos CNPJs</li>
+            <li>Relatórios de economia por veículo</li>
+          </ul>
+          <a class="btn-primary" routerLink="/cadastro" id="btn-frota-cta">Começar grátis</a>
+        </article>
+
+        <article class="audiencia-card">
+          <div class="audiencia-card__icon audiencia-card__icon--revenda" aria-hidden="true">🏪</div>
+          <h3 class="audiencia-card__titulo">Autopeças</h3>
+          <ul class="audiencia-card__lista" role="list">
+            <li>Receba cotações qualificadas</li>
+            <li>Dashboard de inteligência de mercado</li>
+            <li>Aumento exponencial no volume de vendas</li>
+          </ul>
+          <a class="btn-secondary" routerLink="/cadastro" id="btn-revenda-cta">Começar grátis</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Stats Bar ═══════════════════════════════════════════════════ -->
+  <section class="stats-bar" aria-label="Números da plataforma">
+    <div class="container">
+      <div class="stats-bar__grid" role="list">
+        @for (s of stats; track s.rotulo) {
+          <div class="stat" role="listitem">
+            <span class="stat__valor">{{ s.valor }}</span>
+            <span class="stat__rotulo">{{ s.rotulo }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Planos ══════════════════════════════════════════════════════ -->
+  <section class="planos" id="planos" aria-labelledby="planos-title">
+    <div class="container">
+      <div class="section-header section-header--center">
+        <h2 class="section-title" id="planos-title">Planos que acompanham seu crescimento.</h2>
+
+        <!-- Toggle mensal/anual -->
+        <div class="ciclo-toggle" role="group" aria-label="Ciclo de pagamento">
+          <button
+            class="ciclo-btn"
+            [class.ciclo-btn--ativo]="!cicloAnual()"
+            (click)="cicloAnual.set(false)"
+            id="toggle-mensal"
+            [attr.aria-pressed]="!cicloAnual()"
+          >
+            Mensal
+          </button>
+          <button
+            class="ciclo-btn"
+            [class.ciclo-btn--ativo]="cicloAnual()"
+            (click)="cicloAnual.set(true)"
+            id="toggle-anual"
+            [attr.aria-pressed]="cicloAnual()"
+          >
+            Anual
+            <span class="ciclo-badge">-20%</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="planos__grid">
+        @for (plano of planos; track plano.id) {
+          <article class="plano-card" [class.plano-card--destaque]="plano.destaque" [attr.id]="'plano-' + plano.id">
+            @if (plano.badge) {
+              <div class="plano-badge">{{ plano.badge }}</div>
+            }
+            <header class="plano-card__header">
+              <h3 class="plano-card__nome" [class.plano-card__nome--destaque]="plano.destaque">
+                {{ plano.nome }}
+              </h3>
+              <div class="plano-card__preco">
+                @if (plano.preco === null && plano.id === 'starter') {
+                  <span class="preco-free">Grátis</span>
+                } @else if (plano.preco === null) {
+                  <span class="preco-custom">Custom</span>
+                } @else {
+                  <span class="preco-valor">{{ precoExibido(plano) }}</span>
+                  <span class="preco-periodo">/mês</span>
+                }
+              </div>
+              @if (cicloAnual() && plano.precoAnual) {
+                <p class="preco-economia">
+                  Economia de R$ {{ (plano.preco! - plano.precoAnual) * 12 }}/ano
+                </p>
+              }
+            </header>
+            <p class="plano-card__desc">{{ plano.descricao }}</p>
+            <ul class="plano-card__recursos" role="list">
+              @for (r of plano.recursos; track r) {
+                <li class="recurso-item">
+                  <span class="recurso-check" aria-hidden="true">✓</span>
+                  {{ r }}
+                </li>
+              }
+            </ul>
+            <a
+              class="plano-card__cta"
+              [class.plano-card__cta--destaque]="plano.destaque"
+              routerLink="/cadastro"
+              [attr.id]="'btn-plano-' + plano.id"
+            >
+              {{ plano.ctaTexto }}
+            </a>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Depoimentos ═════════════════════════════════════════════════ -->
+  <section class="depoimentos" aria-labelledby="depoimentos-title">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-kicker">Depoimentos</span>
+        <h2 class="section-title" id="depoimentos-title">
+          O que dizem os especialistas do setor.
+        </h2>
+      </div>
+
+      <div class="depoimentos__grid">
+        @for (d of depoimentos; track d.nome) {
+          <article class="depoimento-card">
+            <div class="depoimento-card__estrelas" aria-label="5 estrelas" role="img">
+              @for (s of [1,2,3,4,5]; track s) {
+                <span class="estrela" aria-hidden="true">★</span>
+              }
+            </div>
+            <blockquote class="depoimento-card__texto">{{ d.texto }}</blockquote>
+            <footer class="depoimento-card__autor">
+              <div class="autor-avatar" aria-hidden="true">{{ d.iniciais }}</div>
+              <div class="autor-info">
+                <cite class="autor-nome">{{ d.nome }}</cite>
+                <span class="autor-empresa">{{ d.empresa }}</span>
+              </div>
+            </footer>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FAQ ════════════════════════════════════════════════════════ -->
+  <section class="faq" id="faq" aria-labelledby="faq-title">
+    <div class="container container--narrow">
+      <div class="section-header section-header--center">
+        <h2 class="section-title" id="faq-title">Perguntas Frequentes</h2>
+      </div>
+
+      <dl class="faq__lista">
+        @for (item of faqItems(); track item.pergunta; let i = $index) {
+          <div class="faq-item" [class.faq-item--aberto]="item.aberto">
+            <dt>
+              <button
+                class="faq-item__pergunta"
+                (click)="toggleFaq(i)"
+                [attr.aria-expanded]="item.aberto"
+                [attr.aria-controls]="'faq-resp-' + i"
+                [attr.id]="'faq-btn-' + i"
+              >
+                <span>{{ item.pergunta }}</span>
+                <span class="faq-item__icone" aria-hidden="true">{{ item.aberto ? '−' : '+' }}</span>
+              </button>
+            </dt>
+            <dd
+              class="faq-item__resposta"
+              [attr.id]="'faq-resp-' + i"
+              [attr.aria-labelledby]="'faq-btn-' + i"
+              [hidden]="!item.aberto"
+            >
+              {{ item.resposta }}
+            </dd>
+          </div>
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- ══ CTA Final ═══════════════════════════════════════════════════ -->
+  <section class="cta-final" aria-labelledby="cta-title">
+    <div class="container">
+      <div class="cta-final__inner">
+        <div class="cta-final__deco" aria-hidden="true"></div>
+        <h2 class="cta-final__titulo" id="cta-title">
+          Pronto para cotar peças<br />do jeito certo?
+        </h2>
+        <p class="cta-final__sub">
+          Junte-se a mais de 1.200 oficinas e frotas que já usam o AutoPartsHub.
+        </p>
+        <div class="cta-final__actions">
+          <a class="btn-primary btn-lg" routerLink="/cadastro" id="btn-cta-final">
+            Quero começar agora
+          </a>
+          <a class="btn-outline-white btn-lg" href="mailto:vendas@autopartshub.com.br" id="btn-consultor">
+            Falar com consultor
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Footer ══════════════════════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner container">
+      <div class="footer__brand">
+        <span class="logo-mark">AutoParts</span><span class="logo-hub">Hub</span>
+        <p class="footer__tagline">
+          The Industrial Concierge for Automotive Supply Chains.<br />
+          Digitalizando a logística do setor automotivo.
+        </p>
+      </div>
+
+      <nav class="footer__col" aria-label="Produto">
+        <h5 class="footer__col-title">Produto</h5>
+        <ul role="list">
+          <li><a class="footer__link" href="#">Cotações</a></li>
+          <li><a class="footer__link" href="#">Marketplace</a></li>
+          <li><a class="footer__link" href="#">Dashboard</a></li>
+          <li><a class="footer__link" href="#">App Mobile</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer__col" aria-label="Empresa">
+        <h5 class="footer__col-title">Empresa</h5>
+        <ul role="list">
+          <li><a class="footer__link" href="#">Sobre Nós</a></li>
+          <li><a class="footer__link" href="#">Carreiras</a></li>
+          <li><a class="footer__link" href="#">Blog</a></li>
+          <li><a class="footer__link" href="#">Imprensa</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer__col" aria-label="Suporte">
+        <h5 class="footer__col-title">Suporte</h5>
+        <ul role="list">
+          <li><a class="footer__link" href="#">Central de Ajuda</a></li>
+          <li><a class="footer__link" href="#">API Docs</a></li>
+          <li><a class="footer__link" href="#">Vendas</a></li>
+          <li><a class="footer__link" href="#">Status</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer__bottom">
+      <div class="container">
+        <span class="footer__copy">© 2025 AutoPartsHub. Todos os direitos reservados.</span>
+        <div class="footer__legal">
+          <a class="footer__link-sm" href="#">Termos de Uso</a>
+          <a class="footer__link-sm" href="#">Privacidade</a>
+          <a class="footer__link-sm" href="#">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══ Mobile Sticky CTA ═══════════════════════════════════════════ -->
+  <div class="mobile-cta" aria-label="Ação rápida mobile" role="complementary">
+    <a class="mobile-cta__btn" routerLink="/cadastro" id="btn-mobile-sticky">
+      Criar conta grátis
+    </a>
+  </div>
+
+</div>

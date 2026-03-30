@@ -1,6 +1,6 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 
-export const cadastroRoutes: Routes = [
+export const CADASTRO_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
@@ -12,7 +12,7 @@ export const cadastroRoutes: Routes = [
           import('./pages/selecao-perfil/selecao-perfil.component').then(
             (m) => m.SelecaoPerfilComponent
           ),
-        title: 'Selecionar Perfil — AutoPartsHub',
+        title: 'Selecionar Perfil â€” AutoPartsHub',
       },
       {
         path: 'tipo-empresa',
@@ -20,7 +20,7 @@ export const cadastroRoutes: Routes = [
           import('./pages/tipo-empresa/tipo-empresa.component').then(
             (m) => m.TipoEmpresaComponent
           ),
-        title: 'Tipo de Empresa — AutoPartsHub',
+        title: 'Tipo de Empresa â€” AutoPartsHub',
       },
       {
         path: 'dados-empresa',
@@ -28,7 +28,7 @@ export const cadastroRoutes: Routes = [
           import('./pages/dados-empresa/dados-empresa.component').then(
             (m) => m.DadosEmpresaComponent
           ),
-        title: 'Dados da Empresa — AutoPartsHub',
+        title: 'Dados da Empresa â€” AutoPartsHub',
       },
       {
         path: 'responsavel',
@@ -36,7 +36,7 @@ export const cadastroRoutes: Routes = [
           import('./pages/responsavel-acesso/responsavel-acesso.component').then(
             (m) => m.ResponsavelAcessoComponent
           ),
-        title: 'Responsável e Acesso — AutoPartsHub',
+        title: 'ResponsÃ¡vel e Acesso â€” AutoPartsHub',
       },
       {
         path: 'plano',
@@ -44,7 +44,7 @@ export const cadastroRoutes: Routes = [
           import('./pages/escolha-plano/escolha-plano.component').then(
             (m) => m.EscolhaPlanoComponent
           ),
-        title: 'Escolha do Plano — AutoPartsHub',
+        title: 'Escolha do Plano â€” AutoPartsHub',
       },
       {
         path: 'confirmacao',
@@ -52,7 +52,7 @@ export const cadastroRoutes: Routes = [
           import('./pages/confirmacao/confirmacao.component').then(
             (m) => m.ConfirmacaoComponent
           ),
-        title: 'Cadastro Confirmado — AutoPartsHub',
+        title: 'Cadastro Confirmado â€” AutoPartsHub',
       },
       {
         path: '',
@@ -62,3 +62,4 @@ export const cadastroRoutes: Routes = [
     ],
   },
 ];
+

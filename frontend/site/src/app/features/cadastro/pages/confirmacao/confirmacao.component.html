@@ -1,89 +1,102 @@
-<div class="page-enter confirmacao">
+﻿<div class="page-enter confirmacao">
+  @if (finalizando()) {
+    <p class="label-sm">Finalizando cadastro...</p>
+  }
 
-  <!-- Widget de sucesso -->
-  <div class="sucesso-hero">
-    <div class="sucesso-icone">
-      <div class="icone-ring ring-1"></div>
-      <div class="icone-ring ring-2"></div>
-      <mat-icon class="check-hero">task_alt</mat-icon>
+  @if (erro() && !finalizadoComSucesso()) {
+    <div class="alerta-erro">
+      <mat-icon>error_outline</mat-icon>
+      {{ erro() }}
     </div>
-    <h1 class="sucesso-titulo">Cadastro Realizado!</h1>
-    <p class="sucesso-subtitulo">
-      Sua conta na AutoPartsHub está sendo configurada. Você receberá um e-mail com
-      as instruções de acesso em breve.
-    </p>
-  </div>
+  }
 
-  <!-- Resumo -->
-  <div class="resumo-card">
-    <h2 class="resumo-titulo">
-      <mat-icon>summarize</mat-icon>
-      Resumo do Cadastro
-    </h2>
-
-    <div class="resumo-grid">
-      <div class="resumo-item">
-        <p class="label-sm resumo-label">Perfil</p>
-        <p class="resumo-valor">{{ labelPerfil() }}</p>
+  @if (finalizadoComSucesso()) {
+    <div class="sucesso-hero">
+      <div class="sucesso-icone">
+        <div class="icone-ring ring-1"></div>
+        <div class="icone-ring ring-2"></div>
+        <mat-icon class="check-hero">task_alt</mat-icon>
       </div>
-
-      @if (dadosEmpresa().razaoSocial) {
-        <div class="resumo-item">
-          <p class="label-sm resumo-label">Empresa</p>
-          <p class="resumo-valor">{{ dadosEmpresa().razaoSocial }}</p>
-        </div>
-      }
-
-      @if (responsavel().email) {
-        <div class="resumo-item">
-          <p class="label-sm resumo-label">E-mail de Acesso</p>
-          <p class="resumo-valor">{{ responsavel().email }}</p>
-        </div>
-      }
-
-      <div class="resumo-item">
-        <p class="label-sm resumo-label">Plano Contratado</p>
-        <p class="resumo-valor resumo-plano">
-          <span class="plano-badge">{{ labelPlano() }}</span>
-          <span class="plano-ciclo">{{ labelCiclo() }}</span>
-        </p>
-      </div>
+      <h1 class="sucesso-titulo">Cadastro Finalizado</h1>
+      <p class="sucesso-subtitulo">{{ mensagemResultado() }}</p>
     </div>
-  </div>
 
-  <!-- Próximas etapas -->
-  <div class="proximas-etapas">
-    <h2 class="section-title">
-      <mat-icon>rocket_launch</mat-icon>
-      Próximas etapas
-    </h2>
+    <div class="resumo-card">
+      <h2 class="resumo-titulo">
+        <mat-icon>summarize</mat-icon>
+        Resumo do Cadastro
+      </h2>
 
-    <div class="etapas-timeline">
-      @for (etapa of proximasEtapas; track etapa.titulo; let i = $index) {
-        <div class="timeline-item">
-          <div class="timeline-marcador">{{ i + 1 }}</div>
-          <div class="timeline-conteudo">
-            <h3 class="timeline-titulo">{{ etapa.titulo }}</h3>
-            <p class="timeline-desc">{{ etapa.descricao }}</p>
+      <div class="resumo-grid">
+        <div class="resumo-item">
+          <p class="label-sm resumo-label">Perfil</p>
+          <p class="resumo-valor">{{ labelPerfil() }}</p>
+        </div>
+
+        @if (dadosEmpresa().razaoSocial) {
+          <div class="resumo-item">
+            <p class="label-sm resumo-label">Empresa</p>
+            <p class="resumo-valor">{{ dadosEmpresa().razaoSocial }}</p>
           </div>
-        </div>
-      }
-    </div>
-  </div>
+        }
 
-  <!-- CTAs -->
-  <div class="ctas">
-    <a
-      href="#"
-      class="btn-primary-gradient btn-dashboard"
-      id="btn-ir-dashboard"
-      (click)="$event.preventDefault(); irAoDashboard()"
-    >
-      <mat-icon>dashboard</mat-icon>
-      Acessar o Dashboard
-    </a>
-    <button class="btn-ghost" (click)="novoCadastro()" id="btn-novo-cadastro">
-      Fazer outro cadastro
-    </button>
-  </div>
+        @if (responsavel().email) {
+          <div class="resumo-item">
+            <p class="label-sm resumo-label">E-mail de Acesso</p>
+            <p class="resumo-valor">{{ responsavel().email }}</p>
+          </div>
+        }
+
+        <div class="resumo-item">
+          <p class="label-sm resumo-label">Plano Contratado</p>
+          <p class="resumo-valor resumo-plano">
+            <span class="plano-badge">{{ labelPlano() }}</span>
+            <span class="plano-ciclo">{{ labelCiclo() }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="proximas-etapas">
+      <h2 class="section-title">
+        <mat-icon>rocket_launch</mat-icon>
+        Proximas etapas
+      </h2>
+
+      <div class="etapas-timeline">
+        @for (etapa of proximasEtapas; track etapa.titulo; let i = $index) {
+          <div class="timeline-item">
+            <div class="timeline-marcador">{{ i + 1 }}</div>
+            <div class="timeline-conteudo">
+              <h3 class="timeline-titulo">{{ etapa.titulo }}</h3>
+              <p class="timeline-desc">{{ etapa.descricao }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="ctas">
+      <a
+        href="#"
+        class="btn-primary-gradient btn-dashboard"
+        id="btn-ir-dashboard"
+        (click)="$event.preventDefault(); irAoDashboard()"
+      >
+        <mat-icon>dashboard</mat-icon>
+        Acessar o Dashboard
+      </a>
+      <button class="btn-ghost" (click)="novoCadastro()" id="btn-novo-cadastro">
+        Fazer outro cadastro
+      </button>
+    </div>
+  } @else if (!finalizando()) {
+    <div class="ctas">
+      <button class="btn-primary-gradient btn-dashboard" (click)="tentarNovamente()">
+        <mat-icon>refresh</mat-icon>
+        Tentar finalizar novamente
+      </button>
+      <button class="btn-ghost" (click)="novoCadastro()">Reiniciar cadastro</button>
+    </div>
+  }
 </div>

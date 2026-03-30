@@ -166,6 +166,8 @@ public sealed class Tenant : EntidadeBase
         string? segmentoFrota,
         int? qtdVeiculosEstimada,
         decimal? limiteAprovacaoAdmin,
+        int codigoUf,
+        int codigoIbge,
         EnderecoOnboarding endereco,
         IDateTimeProvider dateTime)
     {
@@ -180,6 +182,12 @@ public sealed class Tenant : EntidadeBase
         var emailCriado = Email.Criar(emailAdmin);
         if (emailCriado.IsFailed)
             throw new ArgumentException(emailCriado.Errors[0].Message, nameof(emailAdmin));
+
+        if (codigoUf <= 0)
+            throw new ArgumentException("codigo_uf_invalido", nameof(codigoUf));
+
+        if (codigoIbge <= 0)
+            throw new ArgumentException("codigo_ibge_invalido", nameof(codigoIbge));
 
         // Tipo Outro → sempre Free, sem trial
         PlanoAssinatura planoFinal;
@@ -241,8 +249,8 @@ public sealed class Tenant : EntidadeBase
                 endereco.Numero,
                 endereco.Complemento,
                 endereco.Bairro,
-                0,
-                0),
+                codigoIbge,
+                codigoUf),
             // Campos herdados de EntidadeBase são inicializados automaticamente
         };
 

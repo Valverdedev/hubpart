@@ -1,18 +1,19 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'cadastro/perfil',
-    pathMatch: 'full',
+    loadChildren: () =>
+      import('./features/home/home.routes').then((m) => m.HOME_ROUTES),
   },
   {
     path: 'cadastro',
     loadChildren: () =>
-      import('./features/cadastro/cadastro.routes').then((m) => m.cadastroRoutes),
+      import('./features/cadastro/cadastro.routes').then((m) => m.CADASTRO_ROUTES),
   },
   {
     path: '**',
-    redirectTo: 'cadastro/perfil',
+    redirectTo: '',
   },
 ];
+

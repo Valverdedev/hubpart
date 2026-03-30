@@ -50,9 +50,17 @@
 
   <!-- Ação -->
   <div class="page-actions">
+    @if (carregando()) {
+      <p class="label-sm">Iniciando sessao de cadastro...</p>
+    }
+
+    @if (erro()) {
+      <p class="label-sm" style="color:#b42318;">{{ erro() }}</p>
+    }
+
     <button
       class="btn-primary-gradient btn-continuar"
-      [disabled]="!perfilSelecionado"
+      [disabled]="!perfilSelecionado || carregando()"
       (click)="continuar()"
     >
       <mat-icon>arrow_forward</mat-icon>
