@@ -1,0 +1,70 @@
+@page "/login"
+@layout LoginLayout
+
+<PageTitle>Login | AutoPartsHub Admin</PageTitle>
+
+<div class="ic-login-container">
+    <MudCard Class="ic-login-card" Elevation="0">
+        @* Header *@
+        <div class="ic-login-header">
+            <div class="ic-login-brand">AutoParts<span>Hub</span></div>
+            <div class="ic-login-version">Admin Console v2.4</div>
+            <div class="ic-ready-indicator">Ready</div>
+        </div>
+
+        @* Title *@
+        <div style="padding: 0 2rem;">
+            <MudText Typo="Typo.h5" Style="color: var(--ic-on-surface); text-align: center;">
+                System Authentication
+            </MudText>
+            <MudText Typo="Typo.body2" Style="color: var(--ic-outline); text-align: center; margin-top: 0.375rem;">
+                Please provide your credentials to access the console.
+            </MudText>
+        </div>
+
+        @* Inputs *@
+        <div class="ic-login-body">
+            <MudTextField @bind-Value="_email" Label="CORPORATE EMAIL" Variant="Variant.Outlined"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Rounded.Mail"
+                          Placeholder="admin@autopartshub.com" FullWidth="true" Margin="Margin.Dense"
+                          Class="ic-input-well mb-4"
+                          Style="margin-bottom: 1rem;"
+                          InputType="InputType.Email" />
+
+            <MudTextField @bind-Value="_password" Label="SECURITY KEY" Variant="Variant.Outlined"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Rounded.Lock"
+                          Placeholder="••••••••••" FullWidth="true" Margin="Margin.Dense"
+                          Class="ic-input-well"
+                          InputType="@_passwordInputType"
+                          AdornmentAriaLabel="toggle password"  />
+
+            <MudButton FullWidth="true" Class="ic-btn-primary mt-6" Size="Size.Large"
+                       StartIcon="@Icons.Material.Rounded.Login"
+                       Style="height: 48px; margin-top: 1.5rem;"
+                       OnClick="HandleLogin">
+                Entrar
+            </MudButton>
+        </div>
+
+        @* Footer *@
+        <div class="ic-login-footer">
+            <MudText Class="ic-login-footer-text">
+                Acesso restrito — AutoPartsHub Admin
+            </MudText>
+            <MudText Class="ic-login-footer-text" Style="margin-top: 0.25rem;">
+                © 2024 Industrial Dynamics Corp. All Rights Reserved.
+            </MudText>
+        </div>
+    </MudCard>
+</div>
+
+@code {
+    private string _email = string.Empty;
+    private string _password = string.Empty;
+    private InputType _passwordInputType = InputType.Password;
+
+    private void HandleLogin()
+    {
+        // TODO: Implement auth flow
+    }
+}

@@ -1,12 +1,143 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
+        <PageTitle>Não encontrado</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex flex-column align-center justify-center" Style="min-height:60vh;">
+                <MudText Typo="Typo.h3" Color="Color.Primary">404</MudText>
+                <MudText Typo="Typo.h6" Class="mt-2">Página não encontrada</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/" Class="mt-4">
+                    Voltar ao Dashboard
+                </MudButton>
+            </MudContainer>
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    private readonly MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#FF6B2B",
+            Secondary = "#334155",
+            Tertiary = "#10B981",
+            Background = "#0a141e",
+            Surface = "#0a141e",
+            AppbarBackground = "#17202b",
+            DrawerBackground = "#0a141e",
+            TextPrimary = "#d9e3f2",
+            TextSecondary = "#b9c7e0",
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#FF6B2B",
+            PrimaryContrastText = "#FFFFFF",
+            Secondary = "#b9c7e0",
+            SecondaryContrastText = "#0a141e",
+            Tertiary = "#4edea3",
+            TertiaryContrastText = "#003824",
+            Background = "#0a141e",
+            Surface = "#17202b",
+            AppbarBackground = "#0a141e",
+            AppbarText = "#d9e3f2",
+            DrawerBackground = "#0a141e",
+            DrawerText = "#b9c7e0",
+            DrawerIcon = "#a98a7f",
+            TextPrimary = "#d9e3f2",
+            TextSecondary = "#b9c7e0",
+            TextDisabled = "#594138",
+            ActionDefault = "#a98a7f",
+            ActionDisabled = "#594138",
+            ActionDisabledBackground = "#212b35",
+            Divider = "rgba(89,65,56,0.2)",
+            DividerLight = "rgba(89,65,56,0.1)",
+            TableLines = "rgba(89,65,56,0.15)",
+            TableStriped = "rgba(33,43,53,0.4)",
+            TableHover = "#303a45",
+            LinesDefault = "rgba(89,65,56,0.2)",
+            LinesInputs = "#594138",
+            HoverOpacity = 0.06,
+            Dark = "#212b35",
+            Error = "#ffb4ab",
+            ErrorContrastText = "#690005",
+            Warning = "#FFB347",
+            WarningContrastText = "#1a1a1a",
+            Info = "#b9c7e0",
+            InfoContrastText = "#0a141e",
+            Success = "#4edea3",
+            SuccessContrastText = "#003824",
+            OverlayDark = "rgba(5,15,25,0.7)",
+            OverlayLight = "rgba(5,15,25,0.5)",
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DefaultBorderRadius = "8px",
+            DrawerWidthLeft = "260px",
+        },
+        Typography = new Typography()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = new[] { "Inter", "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = "0.875rem",
+                FontWeight = "400",
+                LineHeight = "1.5",
+                LetterSpacing = "normal",
+            },
+            H1 = new H1Typography() { FontWeight = "700", FontSize = "2.5rem", LetterSpacing = "-0.02em" },
+            H2 = new H2Typography() { FontWeight = "700", FontSize = "2rem", LetterSpacing = "-0.02em" },
+            H3 = new H3Typography() { FontWeight = "600", FontSize = "1.75rem", LetterSpacing = "-0.01em" },
+            H4 = new H4Typography() { FontWeight = "600", FontSize = "1.5rem" },
+            H5 = new H5Typography() { FontWeight = "600", FontSize = "1.25rem" },
+            H6 = new H6Typography() { FontWeight = "600", FontSize = "1rem" },
+            Subtitle1 = new Subtitle1Typography() { FontWeight = "500", FontSize = "1rem" },
+            Subtitle2 = new Subtitle2Typography() { FontWeight = "500", FontSize = "0.875rem" },
+            Body1 = new Body1Typography() { FontWeight = "400", FontSize = "0.9375rem", LineHeight = "1.6" },
+            Body2 = new Body2Typography() { FontWeight = "400", FontSize = "0.8125rem", LineHeight = "1.5" },
+            Caption = new CaptionTypography() { FontWeight = "600", FontSize = "0.6875rem", LetterSpacing = "0.05em" },
+            Button = new ButtonTypography() { FontWeight = "600", FontSize = "0.875rem", LetterSpacing = "0.02em" },
+            Overline = new OverlineTypography() { FontWeight = "600", FontSize = "0.625rem", LetterSpacing = "0.1em" },
+        },
+        Shadows = new Shadow()
+        {
+            Elevation = new string[]
+            {
+                "none",
+                "0 2px 8px 0 rgba(255,181,154,0.04)",
+                "0 4px 12px 0 rgba(255,181,154,0.04)",
+                "0 6px 16px 0 rgba(255,181,154,0.04)",
+                "0 8px 20px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 10px 24px 0 rgba(255,181,154,0.04)",
+                "0 12px 28px 0 rgba(255,181,154,0.06)",
+            },
+        },
+    };
+}

@@ -1,19 +1,90 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<PageTitle>AutoPartsHub.Blazor.Admin</PageTitle>
-
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+<MudLayout>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0" Variant="DrawerVariant.Mini"
+               OpenMiniOnHover="false" Width="260px" MiniWidth="260px"
+               Class="ic-glass" Style="border-right: none;">
+        @* Brand *@
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-title">AutoParts<span>Hub</span></div>
+            <div class="sidebar-brand-subtitle">Admin Console</div>
         </div>
 
-        <article class="content px-4">
+        @* Navigation *@
+        <MudNavMenu Bordered="false" Color="Color.Primary" Class="pa-0">
+            <MudNavLink Href="/" Icon="@Icons.Material.Rounded.Dashboard" Match="NavLinkMatch.All"
+                        IconColor="Color.Inherit">
+                Dashboard
+            </MudNavLink>
+            <MudNavLink Href="/tenants" Icon="@Icons.Material.Rounded.Business" Match="NavLinkMatch.Prefix"
+                        IconColor="Color.Inherit">
+                <div class="d-flex align-center justify-space-between" style="width:100%;">
+                    <span>Tenants</span>
+                    <span class="nav-badge">12</span>
+                </div>
+            </MudNavLink>
+            <MudNavLink Href="/aprovacao" Icon="@Icons.Material.Rounded.Verified" Match="NavLinkMatch.Prefix"
+                        IconColor="Color.Inherit">
+                Fila de Aprovação
+            </MudNavLink>
+            <MudNavLink Href="/comissoes" Icon="@Icons.Material.Rounded.Payments" Match="NavLinkMatch.Prefix"
+                        IconColor="Color.Inherit">
+                Comissões
+            </MudNavLink>
+        </MudNavMenu>
+
+        <MudSpacer />
+
+        @* Settings at bottom *@
+        <MudNavMenu Bordered="false" Color="Color.Primary" Class="pa-0 mb-2">
+            <MudNavLink Href="/configuracoes" Icon="@Icons.Material.Rounded.Settings" Match="NavLinkMatch.Prefix"
+                        IconColor="Color.Inherit">
+                Configurações
+            </MudNavLink>
+        </MudNavMenu>
+
+        @* User card *@
+        <div class="sidebar-user">
+            <MudAvatar Size="Size.Small" Style="background: linear-gradient(135deg, #A83900, #FF6B2B); color: #fff; font-weight: 700; font-size: 0.75rem;">
+                RS
+            </MudAvatar>
+            <div class="sidebar-user-info">
+                <span class="sidebar-user-name">Ricardo Silva</span>
+                <span class="sidebar-user-role">Super Admin</span>
+            </div>
+        </div>
+    </MudDrawer>
+
+    <MudMainContent>
+        @* AppBar *@
+        <MudAppBar Elevation="0" Dense="true" Style="background: transparent; border-bottom: 1px solid rgba(89,65,56,0.15);">
+            <MudText Typo="Typo.h6" Style="font-weight: 600; color: var(--ic-on-surface);">
+                @_pageTitle
+            </MudText>
+            <MudSpacer />
+            <div class="d-flex align-center gap-2">
+                <MudText Typo="Typo.body2" Style="color: var(--ic-secondary); font-weight: 500;">Admin User</MudText>
+                <MudAvatar Size="Size.Small" Style="background: var(--ic-surface-container-highest); color: var(--ic-on-surface);">
+                    <MudIcon Icon="@Icons.Material.Rounded.Person" Size="Size.Small" />
+                </MudAvatar>
+                <MudIconButton Icon="@Icons.Material.Rounded.Logout" Size="Size.Small"
+                               Style="color: var(--ic-outline);" />
+            </div>
+        </MudAppBar>
+
+        @* Page Content *@
+        <div class="ic-main-content">
             @Body
-        </article>
-    </main>
-</div>
+        </div>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private string _pageTitle = "Dashboard";
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+}

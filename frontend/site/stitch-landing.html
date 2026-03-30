@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AutoPartsHub | O Concierge Industrial para Cadeia de Suprimentos Automotiva</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed": "#002113",
+              "surface-dim": "#d1dbe9",
+              "surface-container": "#e5effd",
+              "primary": "#a83900",
+              "secondary-container": "#cee2f8",
+              "on-surface": "#121c27",
+              "surface-container-highest": "#d9e3f2",
+              "surface-container-low": "#edf4ff",
+              "tertiary-fixed": "#6ffbbe",
+              "surface-bright": "#f7f9ff",
+              "on-surface-variant": "#594138",
+              "secondary-fixed": "#d1e5fb",
+              "secondary-fixed-dim": "#b5c9df",
+              "surface-container-high": "#dfe9f7",
+              "inverse-primary": "#ffb59a",
+              "surface": "#f7f9ff",
+              "on-tertiary-container": "#003a25",
+              "surface-container-lowest": "#ffffff",
+              "on-primary-fixed": "#380d00",
+              "tertiary-fixed-dim": "#4edea3",
+              "surface-variant": "#d9e3f2",
+              "primary-container": "#ff6b2b",
+              "on-primary-fixed-variant": "#802a00",
+              "error": "#ba1a1a",
+              "tertiary-container": "#00af79",
+              "on-error": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-primary": "#ffffff",
+              "on-error-container": "#93000a",
+              "on-tertiary-fixed-variant": "#005236",
+              "on-tertiary": "#ffffff",
+              "on-secondary-fixed-variant": "#36495b",
+              "inverse-surface": "#27313c",
+              "on-secondary-container": "#526478",
+              "inverse-on-surface": "#e8f1ff",
+              "background": "#f7f9ff",
+              "tertiary": "#006c49",
+              "outline": "#8d7167",
+              "on-secondary": "#ffffff",
+              "on-primary-container": "#5c1c00",
+              "secondary": "#4e6073",
+              "primary-fixed": "#ffdbce",
+              "outline-variant": "#e2bfb3",
+              "primary-fixed-dim": "#ffb59a",
+              "surface-tint": "#a83900",
+              "on-background": "#121c27",
+              "on-secondary-fixed": "#081d2d"
+            },
+            fontFamily: {
+              "headline": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+        .glass-footer {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-white">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#0F1923] shadow-2xl shadow-black/20 h-16 flex justify-between items-center px-8">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-white">
+<span class="text-[#FF6B2B]">AutoParts</span>Hub
+            </span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-slate-300 hover:text-white transition-colors font-semibold tracking-tight text-sm" href="#como-funciona">Como Funciona</a>
+<a class="text-slate-300 hover:text-white transition-colors font-semibold tracking-tight text-sm" href="#planos">Planos</a>
+<a class="text-slate-300 hover:text-white transition-colors font-semibold tracking-tight text-sm" href="#faq">FAQ</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-300 hover:text-white transition-colors font-semibold tracking-tight text-sm px-4 py-2">Login</button>
+<button class="bg-[#FF6B2B] text-white font-semibold tracking-tight text-sm px-6 py-2 rounded-xl active:scale-95 transform transition-transform">Começar Agora</button>
+</div>
+</nav>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="bg-[#0F1923] pt-24 pb-32 overflow-hidden">
+<div class="max-w-[900px] mx-auto px-6 text-center">
+<span class="inline-block text-[#FF6B2B] font-label text-[11px] uppercase tracking-[0.05em] font-medium mb-4">Cotação de peças em tempo real</span>
+<h1 class="text-white text-5xl md:text-6xl font-headline font-semibold tracking-tight leading-[1.1] mb-8">
+                    Chega de ligar para cada fornecedor para cotar a mesma peça.
+                </h1>
+<p class="text-slate-400 text-lg mb-12 max-w-2xl mx-auto">
+                    AutoPartsHub connects workshops, fleets, and retailers in a single digital ecosystem. Efficiency for buyers, intelligence for sellers.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center mb-20">
+<button class="h-[44px] px-8 bg-primary text-white rounded-md font-semibold hover:bg-primary-container transition-all active:scale-95">Quero comprar peças</button>
+<button class="h-[44px] px-8 border border-outline-variant text-white rounded-md font-semibold hover:bg-white/5 transition-all active:scale-95">Quero vender peças</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="text-center">
+<div class="text-3xl font-headline font-bold text-[#FF6B2B] mb-1">30 min</div>
+<div class="text-[11px] uppercase tracking-widest text-slate-500 font-medium">Tempo Médio</div>
+</div>
+<div class="text-center">
+<div class="text-3xl font-headline font-bold text-[#FF6B2B] mb-1">3x mais</div>
+<div class="text-[11px] uppercase tracking-widest text-slate-500 font-medium">Produtividade</div>
+</div>
+<div class="text-center">
+<div class="text-3xl font-headline font-bold text-[#FF6B2B] mb-1">100%</div>
+<div class="text-[11px] uppercase tracking-widest text-slate-500 font-medium">Online</div>
+</div>
+<div class="text-center">
+<div class="text-3xl font-headline font-bold text-[#FF6B2B] mb-1">0 taxa</div>
+<div class="text-[11px] uppercase tracking-widest text-slate-500 font-medium">Mensalidade Grátis</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Partner Logos -->
+<section class="bg-surface-container-lowest border-y border-outline-variant/20 py-12">
+<div class="max-w-[900px] mx-auto px-6">
+<div class="flex flex-wrap justify-center items-center gap-12 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
+<span class="text-2xl font-black text-on-surface tracking-tighter">BOSCH</span>
+<span class="text-2xl font-black text-on-surface tracking-tighter">MONROE</span>
+<span class="text-2xl font-black text-on-surface tracking-tighter">NAKATA</span>
+<span class="text-2xl font-black text-on-surface tracking-tighter">COFAP</span>
+<span class="text-2xl font-black text-on-surface tracking-tighter">MAHLE</span>
+</div>
+</div>
+</section>
+<!-- The Problem -->
+<section class="bg-surface-container-low py-24">
+<div class="max-w-[900px] mx-auto px-6">
+<div class="mb-16">
+<span class="text-primary font-label text-[11px] uppercase tracking-[0.05em] font-medium">O Desafio Industrial</span>
+<h2 class="text-4xl font-headline font-semibold mt-2">O processo manual está matando sua margem.</h2>
+</div>
+<div class="grid md:grid-cols-2 gap-6 mb-12">
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">phone_in_talk</span>
+<h3 class="font-bold text-lg">Telefones Ocupados</h3>
+<p class="text-secondary text-sm leading-relaxed">Horas perdidas tentando contato com múltiplos vendedores para uma única cotação.</p>
+</div>
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">history_toggle_off</span>
+<h3 class="font-bold text-lg">Demora no Retorno</h3>
+<p class="text-secondary text-sm leading-relaxed">A peça que você precisa agora só tem orçamento confirmado no final do dia.</p>
+</div>
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">error</span>
+<h3 class="font-bold text-lg">Erros de Aplicação</h3>
+<p class="text-secondary text-sm leading-relaxed">Informações desencontradas resultam em devoluções e carros parados no elevador.</p>
+</div>
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">payments</span>
+<h3 class="font-bold text-lg">Falta de Comparação</h3>
+<p class="text-secondary text-sm leading-relaxed">Você compra do primeiro que atende, sem saber se o preço é competitivo de verdade.</p>
+</div>
+</div>
+<div class="bg-[#0F1923] text-white p-10 rounded-xl flex flex-col md:flex-row items-center justify-between gap-8">
+<div>
+<h3 class="text-2xl font-bold mb-2">A Solução Hub</h3>
+<p class="text-slate-400">Um clique. Múltiplos orçamentos. Zero fricção.</p>
+</div>
+<button class="h-[44px] px-8 bg-[#FF6B2B] text-white rounded-md font-semibold whitespace-nowrap">Conhecer Plataforma</button>
+</div>
+</div>
+</section>
+<!-- How It Works -->
+<section class="bg-white py-24" id="como-funciona">
+<div class="max-w-[900px] mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-headline font-semibold mb-8">Como Funciona</h2>
+<div class="inline-flex bg-surface-container-low p-1 rounded-full">
+<button class="px-6 py-2 bg-white rounded-full text-sm font-bold text-primary shadow-sm">Para compradores</button>
+<button class="px-6 py-2 rounded-full text-sm font-medium text-secondary hover:text-on-surface">Para fornecedores</button>
+</div>
+</div>
+<div class="relative space-y-12 before:absolute before:left-4 before:top-4 before:bottom-4 before:w-px before:bg-outline-variant/30">
+<div class="relative pl-12">
+<div class="absolute left-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">1</div>
+<div>
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container text-primary text-[10px] font-bold uppercase tracking-wider mb-2">Solicitação</span>
+<h4 class="text-xl font-bold mb-2">Envie sua lista de peças</h4>
+<p class="text-secondary">Digite o código ou descreva a peça e o veículo. Nosso sistema identifica os fornecedores ideais.</p>
+</div>
+</div>
+<div class="relative pl-12">
+<div class="absolute left-0 w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface text-xs font-bold">2</div>
+<div>
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container text-primary text-[10px] font-bold uppercase tracking-wider mb-2">Processamento</span>
+<h4 class="text-xl font-bold mb-2">Hub notifica o mercado</h4>
+<p class="text-secondary">Os fornecedores recebem sua cotação instantaneamente e respondem com preço e disponibilidade.</p>
+</div>
+</div>
+<div class="relative pl-12">
+<div class="absolute left-0 w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface text-xs font-bold">3</div>
+<div>
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container text-primary text-[10px] font-bold uppercase tracking-wider mb-2">Comparação</span>
+<h4 class="text-xl font-bold mb-2">Escolha a melhor oferta</h4>
+<p class="text-secondary">Compare preços, marcas e prazos de entrega em uma única tela organizada por economia.</p>
+</div>
+</div>
+<div class="relative pl-12">
+<div class="absolute left-0 w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface text-xs font-bold">4</div>
+<div>
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container text-primary text-[10px] font-bold uppercase tracking-wider mb-2">Fechamento</span>
+<h4 class="text-xl font-bold mb-2">Pedido finalizado</h4>
+<p class="text-secondary">Confirme o pedido e receba as peças. Pagamento direto ou faturado conforme combinado.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Target Audience -->
+<section class="bg-surface-container-low py-24">
+<div class="max-w-[900px] mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-headline font-semibold">Feito para o ecossistema.</h2>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="bg-white p-8 rounded-xl border border-transparent hover:border-primary-container/20 transition-all flex flex-col">
+<h3 class="text-xl font-bold mb-4">Oficina Mecânica</h3>
+<ul class="space-y-3 mb-8 flex-grow">
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Liberte seus mecânicos do telefone
+                            </li>
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Histórico de compras digitalizado
+                            </li>
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Acesso a marcas premium e econômicas
+                            </li>
+</ul>
+<button class="w-full py-3 bg-primary text-white rounded-md font-bold text-sm">Começar grátis</button>
+</div>
+<div class="bg-white p-8 rounded-xl border border-transparent hover:border-primary-container/20 transition-all flex flex-col">
+<h3 class="text-xl font-bold mb-4">Frotistas</h3>
+<ul class="space-y-3 mb-8 flex-grow">
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Redução drástica no TCO
+                            </li>
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Controle centralizado de múltiplos CNPJs
+                            </li>
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Relatórios de economia por veículo
+                            </li>
+</ul>
+<button class="w-full py-3 bg-primary text-white rounded-md font-bold text-sm">Começar grátis</button>
+</div>
+<div class="bg-white p-8 rounded-xl border border-transparent hover:border-primary-container/20 transition-all flex flex-col">
+<h3 class="text-xl font-bold mb-4">Autopeças</h3>
+<ul class="space-y-3 mb-8 flex-grow">
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Receba cotações qualificadas
+                            </li>
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Dashboard de inteligência de mercado
+                            </li>
+<li class="flex items-start gap-2 text-sm text-secondary">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span> Aumento exponencial no volume de vendas
+                            </li>
+</ul>
+<button class="w-full py-3 bg-primary text-white rounded-md font-bold text-sm">Começar grátis</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Bar -->
+<section class="bg-[#0F1923] py-12">
+<div class="max-w-[900px] mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="text-center">
+<div class="text-2xl font-bold text-white mb-1">50k+</div>
+<div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Peças Cotadas/Mês</div>
+</div>
+<div class="text-center">
+<div class="text-2xl font-bold text-white mb-1">1.2k</div>
+<div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Oficinas Ativas</div>
+</div>
+<div class="text-center">
+<div class="text-2xl font-bold text-white mb-1">450</div>
+<div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Distribuidores</div>
+</div>
+<div class="text-center">
+<div class="text-2xl font-bold text-white mb-1">R$ 12M+</div>
+<div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Volume Transacionado</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="bg-white py-24" id="planos">
+<div class="max-w-[900px] mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-headline font-semibold mb-6">Planos que acompanham seu crescimento.</h2>
+<div class="inline-flex bg-surface-container-low p-1 rounded-full">
+<button class="px-6 py-2 bg-white rounded-full text-sm font-bold text-primary shadow-sm">Mensal</button>
+<button class="px-6 py-2 rounded-full text-sm font-medium text-secondary hover:text-on-surface">Anual (-20%)</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<!-- Starter -->
+<div class="bg-white border border-outline-variant/30 p-6 rounded-xl flex flex-col">
+<div class="mb-4">
+<h4 class="font-bold text-sm uppercase tracking-wider text-secondary">Starter</h4>
+<div class="mt-2 text-2xl font-bold">Grátis</div>
+</div>
+<p class="text-xs text-secondary mb-6">Para oficinas pequenas e novos negócios.</p>
+<ul class="space-y-3 mb-8 text-xs text-secondary flex-grow">
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> 5 cotações / mês</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> 3 fornecedores</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> App Mobile</li>
+</ul>
+<button class="w-full py-2 border border-outline text-on-surface rounded-md text-xs font-bold hover:bg-surface-container-low transition-colors">Selecionar</button>
+</div>
+<!-- Profissional -->
+<div class="bg-white border-2 border-[#FF6B2B] p-6 rounded-xl flex flex-col relative shadow-xl shadow-primary/5">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF6B2B] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase">Mais popular</div>
+<div class="mb-4">
+<h4 class="font-bold text-sm uppercase tracking-wider text-[#FF6B2B]">Profissional</h4>
+<div class="mt-2 text-2xl font-bold">R$ 149<span class="text-sm font-normal text-secondary">/mês</span></div>
+</div>
+<p class="text-xs text-secondary mb-6">Acelere seu fluxo de compras diário.</p>
+<ul class="space-y-3 mb-8 text-xs text-secondary flex-grow">
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Cotações ilimitadas</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Todos os fornecedores</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Comparativo de marcas</li>
+</ul>
+<button class="w-full py-2 bg-[#FF6B2B] text-white rounded-md text-xs font-bold active:scale-95 transition-transform">Assinar Agora</button>
+</div>
+<!-- Business -->
+<div class="bg-white border border-outline-variant/30 p-6 rounded-xl flex flex-col">
+<div class="mb-4">
+<h4 class="font-bold text-sm uppercase tracking-wider text-secondary">Business</h4>
+<div class="mt-2 text-2xl font-bold">R$ 299<span class="text-sm font-normal text-secondary">/mês</span></div>
+</div>
+<p class="text-xs text-secondary mb-6">Controle total para grandes frotas.</p>
+<ul class="space-y-3 mb-8 text-xs text-secondary flex-grow">
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Múltiplos usuários</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Gestão de NF-e</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Suporte prioritário</li>
+</ul>
+<button class="w-full py-2 border border-outline text-on-surface rounded-md text-xs font-bold hover:bg-surface-container-low transition-colors">Selecionar</button>
+</div>
+<!-- Enterprise -->
+<div class="bg-white border border-outline-variant/30 p-6 rounded-xl flex flex-col">
+<div class="mb-4">
+<h4 class="font-bold text-sm uppercase tracking-wider text-secondary">Enterprise</h4>
+<div class="mt-2 text-2xl font-bold">Custom</div>
+</div>
+<p class="text-xs text-secondary mb-6">Soluções customizadas para redes.</p>
+<ul class="space-y-3 mb-8 text-xs text-secondary flex-grow">
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Integração via API</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Key Account Manager</li>
+<li class="flex gap-2"><span class="material-symbols-outlined text-[14px] text-tertiary">check</span> Customização de UI</li>
+</ul>
+<button class="w-full py-2 border border-outline text-on-surface rounded-md text-xs font-bold hover:bg-surface-container-low transition-colors">Falar com vendas</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials -->
+<section class="bg-surface-container-low py-24">
+<div class="max-w-[900px] mx-auto px-6">
+<div class="mb-12">
+<span class="text-primary font-label text-[11px] uppercase tracking-[0.05em] font-medium">Depoimentos</span>
+<h2 class="text-3xl font-headline font-semibold mt-2">O que dizem os especialistas do setor.</h2>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="bg-white p-6 rounded-xl">
+<div class="flex text-primary mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-secondary text-sm italic mb-6">"Reduzi meu tempo de cotação em 70%. Hoje meus mecânicos focam apenas no carro, o administrativo ficou leve."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container text-xs">RM</div>
+<div>
+<div class="font-bold text-sm">Ricardo M.</div>
+<div class="text-[10px] text-secondary uppercase">Mecânica do Sol</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl">
+<div class="flex text-primary mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-secondary text-sm italic mb-6">"Como fornecedor, o Hub nos trouxe clientes que jamais alcançaríamos. O retorno sobre investimento é imediato."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container text-xs">AS</div>
+<div>
+<div class="font-bold text-sm">Amanda S.</div>
+<div class="text-[10px] text-secondary uppercase">Peças Prime Dist.</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl">
+<div class="flex text-primary mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-secondary text-sm italic mb-6">"A gestão de frotas se tornou muito mais transparente. Consigo auditar os preços e marcas instaladas com um clique."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-on-secondary-container text-xs">JP</div>
+<div>
+<div class="font-bold text-sm">João P.</div>
+<div class="text-[10px] text-secondary uppercase">Logística Total</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- FAQ -->
+<section class="bg-white py-24" id="faq">
+<div class="max-w-[900px] mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-headline font-semibold">Perguntas Frequentes</h2>
+</div>
+<div class="space-y-2">
+<div class="bg-surface-container-low/50 rounded-xl p-5 border-l-4 border-primary">
+<div class="flex justify-between items-center cursor-pointer">
+<h4 class="font-bold text-on-surface">O AutoPartsHub cobra comissão sobre as vendas?</h4>
+<span class="material-symbols-outlined">expand_less</span>
+</div>
+<div class="mt-4 text-sm text-secondary leading-relaxed">
+                            Não cobramos comissão sobre a transação. O pagamento é feito diretamente entre comprador e vendedor. Nosso modelo é baseado em planos de assinatura de uso da plataforma.
+                        </div>
+</div>
+<div class="bg-white rounded-xl p-5 hover:bg-surface-container-low/30 transition-colors">
+<div class="flex justify-between items-center cursor-pointer">
+<h4 class="font-bold text-on-surface">Quais tipos de peças posso cotar?</h4>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+<div class="bg-white rounded-xl p-5 hover:bg-surface-container-low/30 transition-colors">
+<div class="flex justify-between items-center cursor-pointer">
+<h4 class="font-bold text-on-surface">Preciso instalar algum software?</h4>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+<div class="bg-white rounded-xl p-5 hover:bg-surface-container-low/30 transition-colors">
+<div class="flex justify-between items-center cursor-pointer">
+<h4 class="font-bold text-on-surface">Como os fornecedores são avaliados?</h4>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+<div class="bg-white rounded-xl p-5 hover:bg-surface-container-low/30 transition-colors">
+<div class="flex justify-between items-center cursor-pointer">
+<h4 class="font-bold text-on-surface">A plataforma funciona para motos e pesados?</h4>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+<div class="bg-white rounded-xl p-5 hover:bg-surface-container-low/30 transition-colors">
+<div class="flex justify-between items-center cursor-pointer">
+<h4 class="font-bold text-on-surface">Existe app para iOS e Android?</h4>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="bg-[#0F1923] py-24 text-center">
+<div class="max-w-[900px] mx-auto px-6">
+<h2 class="text-white text-4xl font-headline font-semibold mb-8">Pronto para cotar peças do jeito certo?</h2>
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<button class="h-[44px] px-10 bg-[#FF6B2B] text-white rounded-md font-bold hover:scale-105 transition-transform">Quero começar agora</button>
+<button class="h-[44px] px-10 border border-slate-700 text-white rounded-md font-bold hover:bg-white/5 transition-colors">Falar com consultor</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#0F1923] border-t border-[#E2BFB3]/10 pt-20 pb-10">
+<div class="max-w-[900px] mx-auto px-8 grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+<div>
+<span class="text-lg font-black text-white block mb-6">
+<span class="text-[#FF6B2B]">AutoParts</span>Hub
+                </span>
+<p class="text-slate-400 text-sm leading-relaxed">
+                    The Industrial Concierge for Automotive Supply Chains. Digitalizing the core of automotive logistics.
+                </p>
+</div>
+<div>
+<h5 class="text-white font-bold text-sm mb-6 uppercase tracking-widest opacity-50">Produto</h5>
+<ul class="space-y-3">
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Cotações</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Marketplace</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Dashboard</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">App Mobile</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold text-sm mb-6 uppercase tracking-widest opacity-50">Empresa</h5>
+<ul class="space-y-3">
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Sobre Nós</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Carreiras</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Blog</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Imprensa</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold text-sm mb-6 uppercase tracking-widest opacity-50">Suporte</h5>
+<ul class="space-y-3">
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Central de Ajuda</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">API Docs</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Vendas</a></li>
+<li><a class="text-slate-400 text-sm hover:text-[#FF6B2B] transition-colors" href="#">Status</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[900px] mx-auto px-8 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+<span class="text-slate-500 text-xs">© 2024 AutoPartsHub. All rights reserved.</span>
+<div class="flex gap-6">
+<a class="text-slate-500 text-xs hover:text-white transition-colors" href="#">Termos de Uso</a>
+<a class="text-slate-500 text-xs hover:text-white transition-colors" href="#">Privacidade</a>
+<a class="text-slate-500 text-xs hover:text-white transition-colors" href="#">Cookies</a>
+</div>
+</div>
+</footer>
+<!-- Glass Sticky Mobile Action (Optional for design flair) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 p-4 glass-footer z-40 border-t border-outline-variant/10">
+<button class="w-full bg-[#FF6B2B] text-white py-3 rounded-xl font-bold active:scale-95 transition-transform">Criar conta grátis</button>
+</div>
+</body></html>

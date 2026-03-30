@@ -1,0 +1,214 @@
+@page "/tenants"
+
+<PageTitle>Tenants | AutoPartsHub Admin</PageTitle>
+
+@* ───── PAGE HEADER WITH TABS ───── *@
+<div class="d-flex align-center justify-space-between mb-4">
+    <div class="d-flex align-center gap-3">
+        <MudText Typo="Typo.h5" Style="font-weight: 600; color: var(--ic-on-surface);">
+            Lista de Tenants
+        </MudText>
+        <div class="ic-tabs">
+            <MudButtonGroup OverrideStyles="false">
+                <MudButton Size="Size.Small" Style="color: var(--ic-primary); font-weight: 600; text-transform: none; font-size: 0.8125rem; border-bottom: 2px solid var(--ic-primary); border-radius: 0;">
+                    Visualização Geral
+                </MudButton>
+                <MudButton Size="Size.Small" Style="color: var(--ic-outline); text-transform: none; font-size: 0.8125rem; border-radius: 0;">
+                    Relatórios
+                </MudButton>
+            </MudButtonGroup>
+        </div>
+    </div>
+    <div class="d-flex align-center gap-2">
+        <MudText Typo="Typo.body2" Style="color: var(--ic-secondary); font-weight: 500;">Admin User</MudText>
+        <MudIconButton Icon="@Icons.Material.Rounded.Logout" Size="Size.Small" Style="color: var(--ic-outline);" />
+    </div>
+</div>
+
+@* ───── FILTERS ROW ───── *@
+<MudGrid Spacing="2" Class="mb-4">
+    <MudItem xs="12" sm="6">
+        <MudTextField @bind-Value="_searchQuery" Variant="Variant.Outlined" Margin="Margin.Dense"
+                      Placeholder="Busque por CNPJ, razão ou e-mail..."
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Rounded.Search"
+                      Class="ic-input-well" FullWidth="true"
+                      Label="PESQUISAR TENANT" />
+    </MudItem>
+    <MudItem xs="6" sm="3">
+        <MudSelect @bind-Value="_statusFilter" Label="STATUS" Variant="Variant.Outlined"
+                   Margin="Margin.Dense" Dense="true" FullWidth="true">
+            <MudSelectItem Value="@("all")">Todos os Status</MudSelectItem>
+            <MudSelectItem Value="@("ativo")">Ativo</MudSelectItem>
+            <MudSelectItem Value="@("trial")">Trial</MudSelectItem>
+            <MudSelectItem Value="@("bloqueado")">Bloqueado</MudSelectItem>
+            <MudSelectItem Value="@("pendente")">Pendente</MudSelectItem>
+        </MudSelect>
+    </MudItem>
+    <MudItem xs="6" sm="3">
+        <MudSelect @bind-Value="_planFilter" Label="PLANO" Variant="Variant.Outlined"
+                   Margin="Margin.Dense" Dense="true" FullWidth="true">
+            <MudSelectItem Value="@("all")">Todos os Planos</MudSelectItem>
+            <MudSelectItem Value="@("enterprise")">Enterprise</MudSelectItem>
+            <MudSelectItem Value="@("pro")">Pro</MudSelectItem>
+            <MudSelectItem Value="@("free")">Free</MudSelectItem>
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+
+@* ───── METRIC CARDS ───── *@
+<MudGrid Spacing="3" Class="mb-4">
+    <MudItem xs="12" sm="4">
+        <div class="ic-metric-card active">
+            <div>
+                <div class="ic-metric-label">Tenants Ativos</div>
+                <div class="ic-metric-value">94</div>
+            </div>
+            <MudIcon Icon="@Icons.Material.Rounded.TrendingUp" Style="color: var(--ic-tertiary); opacity: 0.6;" />
+        </div>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <div class="ic-metric-card trial">
+            <div>
+                <div class="ic-metric-label">Em Período Trial</div>
+                <div class="ic-metric-value">28</div>
+            </div>
+            <MudIcon Icon="@Icons.Material.Rounded.HourglassTop" Style="color: var(--ic-error); opacity: 0.6;" />
+        </div>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <div class="ic-metric-card blocked">
+            <div>
+                <div class="ic-metric-label">Inadimplentes / Bloqueados</div>
+                <div class="ic-metric-value">6</div>
+            </div>
+            <MudIcon Icon="@Icons.Material.Rounded.Warning" Style="color: #FFB347; opacity: 0.6;" />
+        </div>
+    </MudItem>
+</MudGrid>
+
+@* ───── DATA TABLE ───── *@
+<MudPaper Class="ic-section-card pa-0">
+    <MudSimpleTable Dense="true" Hover="true" Striped="false" FixedHeader="false" Style="background: transparent;">
+        <thead>
+            <tr>
+                <th></th>
+                <th>NOME FANTASIA</th>
+                <th>CNPJ</th>
+                <th>TIPO</th>
+                <th>PLANO</th>
+                <th>STATUS</th>
+                <th>TRIAL RESTANTE</th>
+                <th>AÇÕES</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tenant in _tenants)
+            {
+                <tr>
+                    <td>
+                        <div class="ic-avatar-initials" style="background: @GetAvatarColor(tenant.Initials);">
+                            @tenant.Initials
+                        </div>
+                    </td>
+                    <td>
+                        <MudText Typo="Typo.body2" Style="font-weight: 600;">@tenant.Nome</MudText>
+                    </td>
+                    <td>
+                        <MudText Typo="Typo.body2" Style="color: var(--ic-outline); font-family: 'Inter', monospace; font-size: 0.75rem;">
+                            @tenant.Cnpj
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudText Typo="Typo.body2" Style="color: var(--ic-secondary); font-size: 0.8125rem;">
+                            @tenant.Tipo
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudChip T="string" Size="Size.Small" Class="@GetPlanClass(tenant.Plano)">
+                            @tenant.Plano
+                        </MudChip>
+                    </td>
+                    <td>
+                        <MudChip T="string" Size="Size.Small" Class="@GetStatusClass(tenant.Status)">
+                            ● @tenant.Status
+                        </MudChip>
+                    </td>
+                    <td>
+                        <MudText Typo="Typo.body2" Style="color: var(--ic-outline); font-size: 0.8125rem;">
+                            @(string.IsNullOrEmpty(tenant.TrialRestante) ? "—" : tenant.TrialRestante)
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudIconButton Icon="@Icons.Material.Rounded.Settings" Size="Size.Small"
+                                       Style="color: var(--ic-outline);" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </MudSimpleTable>
+
+    @* Pagination *@
+    <div class="d-flex align-center justify-space-between pa-3" style="border-top: 1px solid rgba(89,65,56,0.1);">
+        <MudText Typo="Typo.caption" Style="color: var(--ic-outline); font-weight: 400; text-transform: none; letter-spacing: normal;">
+            Mostrando 5 de 128 registros
+        </MudText>
+        <div class="d-flex gap-1">
+            <MudIconButton Icon="@Icons.Material.Rounded.ChevronLeft" Size="Size.Small" Disabled="true" Style="color: var(--ic-outline);" />
+            <MudButton Size="Size.Small" Style="background: var(--ic-primary); color: #fff; min-width: 28px; border-radius: 6px; font-weight: 600; font-size: 0.75rem;">1</MudButton>
+            <MudButton Size="Size.Small" Style="color: var(--ic-outline); min-width: 28px; font-size: 0.75rem;">2</MudButton>
+            <MudButton Size="Size.Small" Style="color: var(--ic-outline); min-width: 28px; font-size: 0.75rem;">3</MudButton>
+            <MudIconButton Icon="@Icons.Material.Rounded.ChevronRight" Size="Size.Small" Style="color: var(--ic-outline);" />
+        </div>
+    </div>
+</MudPaper>
+
+@* ───── FAB ───── *@
+<MudFab StartIcon="@Icons.Material.Rounded.Add" Class="ic-fab"
+        Style="position: fixed; bottom: 2rem; right: 2rem; z-index: 100;" />
+
+@code {
+    private string _searchQuery = string.Empty;
+    private string _statusFilter = "all";
+    private string _planFilter = "all";
+
+    private record TenantRow(string Initials, string Nome, string Cnpj, string Tipo, string Plano, string Status, string TrialRestante);
+
+    private readonly List<TenantRow> _tenants = new()
+    {
+        new("AM", "Auto Mecânica Central", "12.345.678/0001-90", "Oficina", "Pro", "Ativo", ""),
+        new("LF", "Logística Flash S.A.", "98.765.432/0001-11", "Frotista", "Enterprise", "Trial", "Em 4 dias"),
+        new("PP", "Peças & Preços Ltda.", "44.530.066/0001-12", "Lojista", "Free", "Bloqueado", "Expirado"),
+        new("SV", "Super Visão Peritações", "19.298.360/0001-44", "Oficina", "Pro", "Ativo", ""),
+        new("ON", "Global Novo Hub", "85.996.388/0001-80", "Lojista", "Enterprise", "Pendente", ""),
+    };
+
+    private string GetPlanClass(string plan) => plan switch
+    {
+        "Enterprise" => "ic-plan-enterprise",
+        "Pro" => "ic-plan-pro",
+        "Basic" => "ic-plan-basic",
+        "Free" => "ic-plan-free",
+        _ => "ic-plan-basic"
+    };
+
+    private string GetStatusClass(string status) => status switch
+    {
+        "Ativo" => "ic-chip-active",
+        "Aguardando" => "ic-chip-pending",
+        "Suspenso" => "ic-chip-suspended",
+        "Trial" => "ic-chip-trial",
+        "Bloqueado" => "ic-chip-blocked",
+        "Pendente" => "ic-chip-pending",
+        _ => "ic-chip-active"
+    };
+
+    private string GetAvatarColor(string initials) => initials switch
+    {
+        "AM" => "rgba(255,107,43,0.2)",
+        "LF" => "rgba(78,222,163,0.2)",
+        "PP" => "rgba(185,199,224,0.2)",
+        "SV" => "rgba(255,179,71,0.2)",
+        "ON" => "rgba(255,180,171,0.2)",
+        _ => "var(--ic-surface-container-highest)"
+    };
+}

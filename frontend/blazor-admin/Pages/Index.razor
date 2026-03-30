@@ -1,9 +1,226 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>AutoPartsHub Admin - Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+@* ───── KPI ROW ───── *@
+<MudGrid Spacing="3" Class="mb-4">
+    @* MRR *@
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="ic-kpi-card pa-4">
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <div class="ic-kpi-label">MRR TOTAL</div>
+                    <div class="ic-kpi-value" style="color: var(--ic-tertiary);">R$ 142.580,00</div>
+                    <div class="ic-kpi-sub">Receita Recorrente Mensal</div>
+                </div>
+                <div class="ic-kpi-icon success">
+                    <MudIcon Icon="@Icons.Material.Rounded.TrendingUp" />
+                </div>
+            </div>
+        </MudPaper>
+    </MudItem>
 
-Welcome to your new app.
+    @* Tenants Ativos *@
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="ic-kpi-card pa-4">
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <div class="ic-kpi-label">TENANTS ATIVOS</div>
+                    <div class="ic-kpi-value">
+                        1,248
+                        <span style="font-size: 0.75rem; font-weight: 500; color: var(--ic-tertiary); margin-left: 0.375rem;">+3.4%</span>
+                    </div>
+                </div>
+                <div class="ic-kpi-icon info">
+                    <MudIcon Icon="@Icons.Material.Rounded.Groups" />
+                </div>
+            </div>
+        </MudPaper>
+    </MudItem>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    @* Aprovação Pendente *@
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="ic-kpi-card pa-4">
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <div class="ic-kpi-label">APROVAÇÃO PENDENTE</div>
+                    <div class="d-flex align-center gap-2">
+                        <div class="ic-kpi-value">42</div>
+                        <MudChip T="string" Size="Size.Small" Style="background: rgba(255,107,43,0.15); color: var(--ic-primary); font-weight: 700; font-size: 0.625rem;">
+                            Pendente
+                        </MudChip>
+                    </div>
+                </div>
+                <div class="ic-kpi-icon primary">
+                    <MudIcon Icon="@Icons.Material.Rounded.FactCheck" />
+                </div>
+            </div>
+        </MudPaper>
+    </MudItem>
+
+    @* GMV *@
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="ic-kpi-card pa-4">
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <div class="ic-kpi-label">GMV DO MÊS</div>
+                    <div class="ic-kpi-value" style="color: var(--ic-primary);">R$ 4.2M</div>
+                </div>
+                <div class="ic-kpi-icon primary">
+                    <MudIcon Icon="@Icons.Material.Rounded.BarChart" />
+                </div>
+            </div>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@* ───── RECENT TENANTS TABLE ───── *@
+<MudPaper Class="ic-section-card pa-5 mb-4">
+    <div class="d-flex align-center justify-space-between mb-4">
+        <div>
+            <div class="ic-section-title">Últimos Tenants Registrados</div>
+            <div class="ic-section-subtitle">Acompanhamento em tempo real das novas adesões à plataforma.</div>
+        </div>
+        <MudButton StartIcon="@Icons.Material.Rounded.Add" Class="ic-btn-primary" Size="Size.Small">
+            Novo Tenant
+        </MudButton>
+    </div>
+
+    <MudSimpleTable Dense="true" Hover="true" Striped="false" FixedHeader="false" Style="background: transparent;">
+        <thead>
+            <tr>
+                <th>CNPJ</th>
+                <th>NOME FANTASIA</th>
+                <th>PLANO</th>
+                <th>STATUS</th>
+                <th>DATA REGISTRO</th>
+                <th>AÇÕES</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tenant in _recentTenants)
+            {
+                <tr>
+                    <td>
+                        <MudText Typo="Typo.body2" Style="color: var(--ic-outline); font-family: 'Inter', monospace; font-size: 0.75rem;">
+                            @tenant.Cnpj
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudText Typo="Typo.body2" Style="font-weight: 500;">@tenant.Nome</MudText>
+                    </td>
+                    <td>
+                        <MudChip T="string" Size="Size.Small" Class="@GetPlanClass(tenant.Plano)">
+                            @tenant.Plano
+                        </MudChip>
+                    </td>
+                    <td>
+                        <MudChip T="string" Size="Size.Small" Class="@GetStatusClass(tenant.Status)">
+                            ● @tenant.Status
+                        </MudChip>
+                    </td>
+                    <td>
+                        <MudText Typo="Typo.body2" Style="color: var(--ic-outline); font-size: 0.8125rem;">
+                            @tenant.DataRegistro
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudIconButton Icon="@Icons.Material.Rounded.MoreVert" Size="Size.Small"
+                                       Style="color: var(--ic-outline);" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </MudSimpleTable>
+
+    <div class="d-flex align-center justify-space-between mt-3" style="padding: 0.25rem 1rem;">
+        <MudText Typo="Typo.caption" Style="color: var(--ic-outline); font-weight: 400; text-transform: none; letter-spacing: normal;">
+            Mostrando 5 de 1,248 registros
+        </MudText>
+        <div class="d-flex gap-1">
+            <MudIconButton Icon="@Icons.Material.Rounded.ChevronLeft" Size="Size.Small" Style="color: var(--ic-outline);" />
+            <MudButton Size="Size.Small" Style="background: var(--ic-primary); color: #fff; min-width: 28px; border-radius: 6px; font-weight: 600; font-size: 0.75rem;">1</MudButton>
+            <MudButton Size="Size.Small" Style="color: var(--ic-outline); min-width: 28px; font-size: 0.75rem;">2</MudButton>
+            <MudIconButton Icon="@Icons.Material.Rounded.ChevronRight" Size="Size.Small" Style="color: var(--ic-outline);" />
+        </div>
+    </div>
+</MudPaper>
+
+@* ───── BOTTOM ROW: SUPPORT + STATUS ───── *@
+<MudGrid Spacing="3">
+    @* Support Card *@
+    <MudItem xs="12" md="7">
+        <div class="ic-support-card">
+            <div class="ic-support-icon">
+                <MudIcon Icon="@Icons.Material.Rounded.HeadsetMic" Size="Size.Medium" />
+            </div>
+            <div>
+                <MudText Typo="Typo.subtitle1" Style="font-weight: 600; color: var(--ic-on-surface);">
+                    Precisa de assistência técnica?
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: var(--ic-outline); margin-top: 0.25rem; line-height: 1.5;">
+                    Nossa equipe de engenharia está online para ajudar com integrações de API e suporte aos Tenants.
+                </MudText>
+                <MudButton Class="mt-2" Style="color: var(--ic-primary); text-transform: none; font-weight: 600; font-size: 0.8125rem; padding: 0;"
+                           EndIcon="@Icons.Material.Rounded.ArrowForward" Variant="Variant.Text">
+                    ABRIR CONSOLE DE SUPORTE
+                </MudButton>
+            </div>
+        </div>
+    </MudItem>
+
+    @* System Status Card *@
+    <MudItem xs="12" md="5">
+        <div class="ic-status-card">
+            <div class="ic-status-header">
+                <span class="ic-status-label">SYSTEM STATUS</span>
+                <span class="ic-status-badge">● All systems operational</span>
+            </div>
+            <MudText Typo="Typo.body2" Style="color: var(--ic-outline); font-size: 0.75rem;">API Latency</MudText>
+            <MudText Typo="Typo.body2" Style="color: var(--ic-on-surface); font-weight: 600; font-size: 0.8125rem;">24ms</MudText>
+            <div class="ic-bars">
+                <div class="ic-bar green" style="height: 65%;"></div>
+                <div class="ic-bar green" style="height: 45%;"></div>
+                <div class="ic-bar green" style="height: 75%;"></div>
+                <div class="ic-bar green" style="height: 55%;"></div>
+                <div class="ic-bar green" style="height: 90%;"></div>
+                <div class="ic-bar orange" style="height: 40%;"></div>
+                <div class="ic-bar green" style="height: 80%;"></div>
+                <div class="ic-bar green" style="height: 70%;"></div>
+            </div>
+        </div>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private record RecentTenant(string Cnpj, string Nome, string Plano, string Status, string DataRegistro);
+
+    private readonly List<RecentTenant> _recentTenants = new()
+    {
+        new("12.345.678/0001-90", "Peças Express LTDA", "Enterprise", "Ativo", "Hoje, 14:30"),
+        new("98.765.432/0001-11", "Auto Central Sul", "Pro", "Ativo", "Ontem, 08:12"),
+        new("45.678.123/0001-55", "Mecânica do Futuro", "Pro", "Aguardando", "12 Mai, 2024"),
+        new("36.253.111/0001-88", "Distribuidora Impacto", "Enterprise", "Ativo", "11 Mai, 2024"),
+        new("17.899.001/0001-97", "Prime Parts Hub", "Basic", "Suspenso", "10 Mai, 2024"),
+    };
+
+    private string GetPlanClass(string plan) => plan switch
+    {
+        "Enterprise" => "ic-plan-enterprise",
+        "Pro" => "ic-plan-pro",
+        "Basic" => "ic-plan-basic",
+        "Free" => "ic-plan-free",
+        _ => "ic-plan-basic"
+    };
+
+    private string GetStatusClass(string status) => status switch
+    {
+        "Ativo" => "ic-chip-active",
+        "Aguardando" => "ic-chip-pending",
+        "Suspenso" => "ic-chip-suspended",
+        "Trial" => "ic-chip-trial",
+        "Bloqueado" => "ic-chip-blocked",
+        "Pendente" => "ic-chip-pending",
+        _ => "ic-chip-active"
+    };
+}
