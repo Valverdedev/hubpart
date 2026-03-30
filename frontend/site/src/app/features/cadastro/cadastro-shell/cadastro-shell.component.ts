@@ -1,8 +1,8 @@
-import { Component, inject, computed } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+﻿import { Component, computed, inject, OnInit } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { CadastroStateService } from '../../../core/services/cadastro-state.service';
+import { OnboardingStateService } from '../../../core/services/onboarding-state.service';
 
 interface Etapa {
   rotulo: string;
@@ -17,18 +17,37 @@ interface Etapa {
   templateUrl: './cadastro-shell.component.html',
   styleUrl: './cadastro-shell.component.scss',
 })
-export class CadastroShellComponent {
-  private readonly cadastroState = inject(CadastroStateService);
+export class CadastroShellComponent implements OnInit {
+  private readonly onboardingState = inject(OnboardingStateService);
 
-  readonly etapaAtual = this.cadastroState.etapaAtual;
-  readonly progressoPercent = this.cadastroState.progressoPercent;
+  readonly etapaAtual = this.onboardingState.currentStep;
+  readonly progressoPercent = computed(() => {
+    const totalEtapas = 5;
+    return Math.round((Math.min(this.etapaAtual(), totalEtapas) / totalEtapas) * 100);
+  });
 
   readonly etapas: Etapa[] = [
-    { rotulo: 'Seleção de Perfil',    icone: 'person',             rota: 'perfil' },
-    { rotulo: 'Tipo de Empresa',      icone: 'business',           rota: 'tipo-empresa' },
-    { rotulo: 'Dados da Empresa',     icone: 'domain',             rota: 'dados-empresa' },
-    { rotulo: 'Responsável e Acesso', icone: 'manage_accounts',    rota: 'responsavel' },
-    { rotulo: 'Escolha do Plano',     icone: 'workspace_premium',  rota: 'plano' },
-    { rotulo: 'Confirmação',          icone: 'task_alt',           rota: 'confirmacao' },
+    { rotulo: 'Selecao de Perfil', icone: 'person', rota: 'perfil' },
+    { rotulo: 'Tipo de Empresa', icone: 'business', rota: 'tipo-empresa' },
+    { rotulo: 'Dados da Empresa', icone: 'domain', rota: 'dados-empresa' },
+    { rotulo: 'Responsavel e Acesso', icone: 'manage_accounts', rota: 'responsavel' },
+    { rotulo: 'Escolha do Plano', icone: 'workspace_premium', rota: 'plano' },
+    { rotulo: 'Confirmacao', icone: 'task_alt', rota: 'confirmacao' },
   ];
+
+  ngOnInit(): void {
+    void this.bootstrapSession();
+  }
+
+  private async bootstrapSession(): Promise<void> {
+    if (this.onboardingState.sessionToken()) {
+      const restored = await this.onboardingState.restoreSession();
+      if (!restored) {
+        await this.onboardingState.initSession(undefined, { preserveDraft: false });
+      }
+      return;
+    }
+
+    await this.onboardingState.initSession(undefined, { preserveDraft: false });
+  }
 }

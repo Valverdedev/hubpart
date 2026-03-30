@@ -16,6 +16,7 @@ public sealed class CadastrarCompradorCommandHandler(
     IOnboardingRascunhoRepository rascunhoRepo,
     ITenantRepository tenantRepo,
     IIdentidadeService identidadeService,
+    ILocalizacaoService localizacaoService,
     ICacheService cache,
     IPublisher publisher,
     IDateTimeProvider dateTime,
@@ -82,6 +83,14 @@ public sealed class CadastrarCompradorCommandHandler(
             dados.Cidade ?? string.Empty,
             dados.Estado ?? string.Empty);
 
+        var localizacao = await localizacaoService.ResolverAsync(
+            dados.Estado,
+            dados.Cidade,
+            cancellationToken);
+
+        if (!localizacao.CodigoUf.HasValue || !localizacao.CodigoIbge.HasValue)
+            return Result.Fail("localizacao_invalida");
+
         Tenant tenant;
         try
         {
@@ -99,6 +108,8 @@ public sealed class CadastrarCompradorCommandHandler(
                 dados.SegmentoFrota,
                 dados.QtdVeiculosEstimada,
                 dados.LimiteAprovacaoAdmin,
+                localizacao.CodigoUf.Value,
+                localizacao.CodigoIbge.Value,
                 enderecoOnboarding,
                 dateTime);
         }
@@ -149,29 +160,5 @@ public sealed class CadastrarCompradorCommandHandler(
         }
 
         return Result.Ok(new CadastrarCompradorResultadoDto(tenant.Id, "criado"));
-    }
-
-    private sealed class DadosRascunho
-    {
-        public string? Cnpj { get; set; }
-        public string? RazaoSocial { get; set; }
-        public string? NomeFantasia { get; set; }
-        public string? TelefoneComercial { get; set; }
-        public string? InscricaoEstadual { get; set; }
-        public string? Cep { get; set; }
-        public string? Logradouro { get; set; }
-        public string? Numero { get; set; }
-        public string? Complemento { get; set; }
-        public string? Bairro { get; set; }
-        public string? Cidade { get; set; }
-        public string? Estado { get; set; }
-        public string? NomeCompleto { get; set; }
-        public string? Email { get; set; }
-        public string? Senha { get; set; }
-        public string? ComoNosConheceu { get; set; }
-        public string? DescricaoOutro { get; set; }
-        public string? SegmentoFrota { get; set; }
-        public int? QtdVeiculosEstimada { get; set; }
-        public decimal? LimiteAprovacaoAdmin { get; set; }
     }
 }

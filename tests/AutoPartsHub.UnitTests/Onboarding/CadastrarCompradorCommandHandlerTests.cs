@@ -18,6 +18,7 @@ public sealed class CadastrarCompradorCommandHandlerTests
     private readonly IOnboardingRascunhoRepository _rascunhoRepo = Substitute.For<IOnboardingRascunhoRepository>();
     private readonly ITenantRepository _tenantRepo = Substitute.For<ITenantRepository>();
     private readonly IIdentidadeService _identidade = Substitute.For<IIdentidadeService>();
+    private readonly ILocalizacaoService _localizacao = Substitute.For<ILocalizacaoService>();
     private readonly ICacheService _cache = Substitute.For<ICacheService>();
     private readonly IPublisher _publisher = Substitute.For<IPublisher>();
     private readonly IDateTimeProvider _dateTime = Substitute.For<IDateTimeProvider>();
@@ -30,6 +31,8 @@ public sealed class CadastrarCompradorCommandHandlerTests
         _tenantRepo.SalvarAlteracoesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
         _rascunhoRepo.DeletarAsync(Arg.Any<OnboardingRascunho>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
         _cache.SetarAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        _localizacao.ResolverAsync(Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns(new LocalizacaoResolvidaDto(32, 3205309));
 
         _dateTime.UtcNow.Returns(new DateTime(2026, 3, 29, 0, 0, 0, DateTimeKind.Utc));
 
@@ -37,6 +40,7 @@ public sealed class CadastrarCompradorCommandHandlerTests
             _rascunhoRepo,
             _tenantRepo,
             _identidade,
+            _localizacao,
             _cache,
             _publisher,
             _dateTime,

@@ -1,32 +1,41 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
-  ReactiveFormsModule,
-  FormBuilder,
-  Validators,
   AbstractControl,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
   ValidationErrors,
+  Validators,
 } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatButtonModule } from '@angular/material/button';
-import { CadastroStateService } from '../../../../core/services/cadastro-state.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { OnboardingDraft } from '../../../../core/models/onboarding.model';
+import { OnboardingStateService } from '../../../../core/services/onboarding-state.service';
 
-// Validator senha forte
-function senhaForteValidator(control: AbstractControl): ValidationErrors | null {
-  const v = control.value ?? '';
-  if (v.length < 8)   return { senhaFraca: 'Mínimo 8 caracteres' };
-  if (!/[A-Z]/.test(v)) return { senhaFraca: '1 letra maiúscula' };
-  if (!/[0-9]/.test(v)) return { senhaFraca: '1 número' };
+function senhaForteValidator(control: AbstractControl<string>): ValidationErrors | null {
+  const valor = control.value;
+  if (valor.length < 8) {
+    return { senhaFraca: 'Minimo 8 caracteres' };
+  }
+
+  if (!/[A-Z]/.test(valor)) {
+    return { senhaFraca: '1 letra maiuscula' };
+  }
+
+  if (!/[0-9]/.test(valor)) {
+    return { senhaFraca: '1 numero' };
+  }
+
   return null;
 }
 
-// Validator confirmar senha
-function confirmarSenhaValidator(control: AbstractControl): ValidationErrors | null {
+function confirmarSenhaValidator(control: AbstractControl<string>): ValidationErrors | null {
   const senha = control.parent?.get('senha')?.value;
   return control.value !== senha ? { senhasNaoConferem: true } : null;
 }
@@ -47,61 +56,111 @@ function confirmarSenhaValidator(control: AbstractControl): ValidationErrors | n
   templateUrl: './responsavel-acesso.component.html',
   styleUrl: './responsavel-acesso.component.scss',
 })
-export class ResponsavelAcessoComponent implements OnInit {
+export class ResponsavelAcessoComponent {
   private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
-  private readonly cadastroState = inject(CadastroStateService);
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly onboardingState = inject(OnboardingStateService);
+
+  private draftHydrated = false;
 
   readonly mostrarSenha = signal(false);
   readonly forcaSenha = signal(0);
   readonly forcaSenhaTexto = signal('');
 
-  form = this.fb.group({
-    nomeCompleto:     ['', Validators.required],
-    cargo:            ['', Validators.required],
-    email:            ['', [Validators.required, Validators.email]],
-    telefone:         [''],
-    senha:            ['', [Validators.required, senhaForteValidator]],
-    confirmacaoSenha: ['', [Validators.required, confirmarSenhaValidator]],
-    aceitaTermos:     [false, Validators.requiredTrue],
+  readonly form = this.fb.group({
+    nomeCompleto: this.fb.control('', { validators: [Validators.required] }),
+    cargo: this.fb.control('', { validators: [Validators.required] }),
+    email: this.fb.control('', { validators: [Validators.required, Validators.email] }),
+    telefone: this.fb.control(''),
+    senha: this.fb.control('', { validators: [Validators.required, senhaForteValidator] }),
+    confirmacaoSenha: this.fb.control('', { validators: [Validators.required, confirmarSenhaValidator] }),
+    aceitaTermos: this.fb.control(false, { validators: [Validators.requiredTrue] }),
   });
 
-  ngOnInit(): void {
-    const dados = this.cadastroState.responsavel();
-    if (dados && Object.keys(dados).length > 0) {
-      this.form.patchValue(dados as any);
-    }
+  constructor() {
+    effect(() => {
+      const draft = this.onboardingState.draft();
+      if (this.draftHydrated || Object.keys(draft).length === 0) {
+        return;
+      }
 
-    this.form.get('senha')?.valueChanges.subscribe((senha) => {
-      this.calcularForcaSenha(senha ?? '');
+      this.form.patchValue({
+        nomeCompleto: draft.nomeCompleto ?? '',
+        cargo: draft.cargo ?? '',
+        email: draft.email ?? '',
+        telefone: draft.responsavelTelefone ?? '',
+        senha: draft.senha ?? '',
+        aceitaTermos: draft.aceitaTermos ?? false,
+      });
+
+      this.draftHydrated = true;
     });
+
+    this.form.controls.senha.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((senha) => {
+        this.calcularForcaSenha(senha ?? '');
+      });
   }
 
   private calcularForcaSenha(senha: string): void {
     let forca = 0;
-    if (senha.length >= 8)        forca++;
-    if (/[A-Z]/.test(senha))      forca++;
-    if (/[0-9]/.test(senha))      forca++;
-    if (/[^A-Za-z0-9]/.test(senha)) forca++;
+
+    if (senha.length >= 8) {
+      forca += 1;
+    }
+
+    if (/[A-Z]/.test(senha)) {
+      forca += 1;
+    }
+
+    if (/[0-9]/.test(senha)) {
+      forca += 1;
+    }
+
+    if (/[^A-Za-z0-9]/.test(senha)) {
+      forca += 1;
+    }
+
     this.forcaSenha.set(forca);
     this.forcaSenhaTexto.set(['', 'Fraca', 'Regular', 'Boa', 'Forte'][forca]);
   }
 
   toggleSenha(): void {
-    this.mostrarSenha.update((v) => !v);
+    this.mostrarSenha.update((visible) => !visible);
   }
 
-  voltar(): void {
-    this.cadastroState.voltarEtapa();
-    this.router.navigate(['/cadastro/dados-empresa']);
+  async voltar(): Promise<void> {
+    await this.router.navigate(['/cadastro/dados-empresa']);
   }
 
-  continuar(): void {
+  async continuar(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    this.cadastroState.salvarResponsavel(this.form.value as any);
-    this.router.navigate(['/cadastro/plano']);
+
+    this.onboardingState.patchDraft(this.mapFormToDraft());
+
+    const saved = await this.onboardingState.saveStep(3);
+    if (!saved) {
+      return;
+    }
+
+    await this.router.navigate(['/cadastro/plano']);
+  }
+
+  private mapFormToDraft(): Partial<OnboardingDraft> {
+    const formValue = this.form.getRawValue();
+
+    return {
+      nomeCompleto: formValue.nomeCompleto,
+      cargo: formValue.cargo,
+      email: formValue.email,
+      responsavelTelefone: formValue.telefone,
+      senha: formValue.senha,
+      aceitaTermos: formValue.aceitaTermos,
+    };
   }
 }

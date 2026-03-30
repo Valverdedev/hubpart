@@ -86,6 +86,8 @@ public sealed class ExpirarTrialCommandHandlerTests
             segmentoFrota: null,
             qtdVeiculosEstimada: null,
             limiteAprovacaoAdmin: null,
+            codigoUf: 32,
+            codigoIbge: 3205309,
             endereco: new EnderecoOnboarding("29140000", "Rua A", "100", null, "Centro", "Vitoria", "ES"),
             dateTime: _dateTime);
     }

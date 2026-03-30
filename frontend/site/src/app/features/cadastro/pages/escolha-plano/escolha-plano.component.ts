@@ -1,11 +1,23 @@
-import { Component, inject, signal } from '@angular/core';
+﻿import { Component, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { CadastroStateService } from '../../../../core/services/cadastro-state.service';
-import { InfoPlano, TipoPlano } from '../../../../core/models/cadastro.model';
+import { SubscriptionPlan } from '../../../../core/models/onboarding.model';
+import { OnboardingStateService } from '../../../../core/services/onboarding-state.service';
+
+interface PlanoInfo {
+  tipo: SubscriptionPlan;
+  nome: string;
+  preco: number | null;
+  precoAnual: number | null;
+  cotacoesMes: number | 'Ilimitado';
+  comissao: string;
+  recursos: string[];
+  destaque: boolean;
+  labelBadge?: string;
+}
 
 @Component({
   selector: 'app-escolha-plano',
@@ -16,44 +28,34 @@ import { InfoPlano, TipoPlano } from '../../../../core/models/cadastro.model';
 })
 export class EscolhaPlanoComponent {
   private readonly router = inject(Router);
-  private readonly cadastroState = inject(CadastroStateService);
+  private readonly onboardingState = inject(OnboardingStateService);
 
-  readonly planoSelecionado = signal<TipoPlano | null>(null);
+  readonly planoSelecionado = signal<SubscriptionPlan | null>(null);
   cicloSelecionado: 'MENSAL' | 'ANUAL' = 'MENSAL';
 
-  readonly planos: InfoPlano[] = [
+  readonly planos: PlanoInfo[] = [
     {
-      tipo: 'TRIAL',
+      tipo: 'Free',
       nome: 'Trial Gratuito',
       preco: null,
       precoAnual: null,
       cotacoesMes: 10,
-      comissao: 'Sem comissão',
+      comissao: 'Sem comissao',
       destaque: false,
-      recursos: [
-        'Acesso por 30 dias',
-        'Suporte por e-mail',
-        'Dashboard básico',
-        'Sem cartão de crédito',
-      ],
+      recursos: ['Acesso por 30 dias', 'Suporte por e-mail', 'Dashboard basico', 'Sem cartao de credito'],
     },
     {
-      tipo: 'BASICO',
-      nome: 'Básico',
+      tipo: 'Basico',
+      nome: 'Basico',
       preco: 149,
       precoAnual: 119,
       cotacoesMes: 50,
       comissao: '3%',
       destaque: false,
-      recursos: [
-        'Histórico 90 dias',
-        'Suporte via chat',
-        'Relatórios básicos',
-        'App mobile (PWA)',
-      ],
+      recursos: ['Historico 90 dias', 'Suporte via chat', 'Relatorios basicos', 'App mobile (PWA)'],
     },
     {
-      tipo: 'PROFISSIONAL',
+      tipo: 'Profissional',
       nome: 'Profissional',
       preco: 349,
       precoAnual: 279,
@@ -62,15 +64,15 @@ export class EscolhaPlanoComponent {
       destaque: true,
       labelBadge: 'Mais popular',
       recursos: [
-        'Histórico ilimitado',
-        'Suporte prioritário',
-        'Relatórios avançados',
-        'Múltiplos usuários (5)',
-        'Integração ERP básica',
+        'Historico ilimitado',
+        'Suporte prioritario',
+        'Relatorios avancados',
+        'Multiplos usuarios (5)',
+        'Integracao ERP basica',
       ],
     },
     {
-      tipo: 'ENTERPRISE',
+      tipo: 'Enterprise',
       nome: 'Enterprise',
       preco: 799,
       precoAnual: 639,
@@ -78,37 +80,61 @@ export class EscolhaPlanoComponent {
       comissao: '1,5%',
       destaque: false,
       recursos: [
-        'Usuários ilimitados',
+        'Usuarios ilimitados',
         'Gerente de conta dedicado',
-        'Integração ERP avançada',
+        'Integracao ERP avancada',
         'SLA 99,9%',
         'API completa',
       ],
     },
   ];
 
-  precoExibido(plano: InfoPlano): number {
+  constructor() {
+    effect(() => {
+      const draft = this.onboardingState.draft();
+
+      if (!this.planoSelecionado() && draft.planoEscolhido) {
+        this.planoSelecionado.set(draft.planoEscolhido);
+      }
+
+      if (draft.cicloPagamento) {
+        this.cicloSelecionado = draft.cicloPagamento;
+      }
+    });
+  }
+
+  precoExibido(plano: PlanoInfo): number {
     if (this.cicloSelecionado === 'ANUAL' && plano.precoAnual !== null) {
       return plano.precoAnual;
     }
-    return plano.preco!;
+
+    return plano.preco ?? 0;
   }
 
-  selecionarPlano(tipo: TipoPlano): void {
+  selecionarPlano(tipo: SubscriptionPlan): void {
     this.planoSelecionado.set(tipo);
   }
 
-  voltar(): void {
-    this.cadastroState.voltarEtapa();
-    this.router.navigate(['/cadastro/responsavel']);
+  async voltar(): Promise<void> {
+    await this.router.navigate(['/cadastro/responsavel']);
   }
 
-  continuar(): void {
-    if (!this.planoSelecionado()) return;
-    this.cadastroState.salvarPlano({
-      plano: this.planoSelecionado()!,
+  async continuar(): Promise<void> {
+    const plano = this.planoSelecionado();
+    if (!plano) {
+      return;
+    }
+
+    this.onboardingState.patchDraft({
+      planoEscolhido: plano,
       cicloPagamento: this.cicloSelecionado,
     });
-    this.router.navigate(['/cadastro/confirmacao']);
+
+    const saved = await this.onboardingState.saveStep(4);
+    if (!saved) {
+      return;
+    }
+
+    await this.router.navigate(['/cadastro/confirmacao']);
   }
 }

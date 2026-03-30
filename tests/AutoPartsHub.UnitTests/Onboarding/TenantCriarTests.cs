@@ -28,6 +28,8 @@ public sealed class TenantCriarTests
             segmentoFrota: "Leve",
             qtdVeiculosEstimada: 12,
             limiteAprovacaoAdmin: 5000,
+            codigoUf: 32,
+            codigoIbge: 3205309,
             endereco: new EnderecoOnboarding("29140000", "Rua A", "100", null, "Centro", "Vitoria", "ES"),
             dateTime: dateTime);
     }

@@ -1,15 +1,15 @@
-<div class="page-enter dados-empresa">
+﻿<div class="page-enter dados-empresa">
   <header class="page-header">
     <p class="label-sm step-label">Etapa 2 de 5</p>
     <h1 class="page-title">Dados da Empresa</h1>
     <p class="page-subtitle">
-      Informe os dados da sua empresa. Preencha o CNPJ para preenchimento automático.
+      Informe os dados da sua empresa. Preencha o CNPJ para preenchimento automÃ¡tico.
     </p>
   </header>
 
   <form [formGroup]="form" (ngSubmit)="continuar()" novalidate>
 
-    <!-- Seção: Dados Fiscais -->
+    <!-- SeÃ§Ã£o: Dados Fiscais -->
     <section class="form-section">
       <h2 class="section-title">
         <mat-icon>receipt_long</mat-icon>
@@ -35,7 +35,7 @@
             }
           </mat-icon>
           @if (form.get('cnpj')?.hasError('cnpjInvalido') && form.get('cnpj')?.touched) {
-            <mat-error>CNPJ inválido</mat-error>
+            <mat-error>CNPJ invÃ¡lido</mat-error>
           }
         </mat-form-field>
       </div>
@@ -49,10 +49,10 @@
 
       <div class="form-row form-row-2">
         <mat-form-field appearance="outline">
-          <mat-label>Razão Social</mat-label>
+          <mat-label>RazÃ£o Social</mat-label>
           <input matInput formControlName="razaoSocial" id="campo-razao-social" />
           @if (form.get('razaoSocial')?.hasError('required') && form.get('razaoSocial')?.touched) {
-            <mat-error>Campo obrigatório</mat-error>
+            <mat-error>Campo obrigatÃ³rio</mat-error>
           }
         </mat-form-field>
 
@@ -67,25 +67,28 @@
           <mat-label>Telefone</mat-label>
           <mat-icon matPrefix>phone</mat-icon>
           <input matInput formControlName="telefone" placeholder="(00) 00000-0000" id="campo-telefone" />
+          @if (form.get('telefone')?.hasError('required') && form.get('telefone')?.touched) {
+            <mat-error>Campo obrigatorio</mat-error>
+          }
         </mat-form-field>
       </div>
     </section>
 
     <mat-divider />
 
-    <!-- Seção: Endereço -->
+    <!-- SeÃ§Ã£o: EndereÃ§o -->
     <section class="form-section">
       <h2 class="section-title">
         <mat-icon>location_on</mat-icon>
-        Endereço
+        EndereÃ§o
       </h2>
 
       <div class="form-row">
         <mat-form-field appearance="outline" class="field-sm">
           <mat-label>CEP</mat-label>
-          <input matInput formControlName="cep" placeholder="00000-000" maxlength="9" id="campo-cep" />
+          <input matInput formControlName="cep" placeholder="00000-000" maxlength="9" id="campo-cep" (blur)="consultarCep()" />
           @if (form.get('cep')?.hasError('required') && form.get('cep')?.touched) {
-            <mat-error>Campo obrigatório</mat-error>
+            <mat-error>Campo obrigatÃ³rio</mat-error>
           }
         </mat-form-field>
 
@@ -95,7 +98,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field-xs">
-          <mat-label>Número</mat-label>
+          <mat-label>NÃºmero</mat-label>
           <input matInput formControlName="numero" id="campo-numero" />
         </mat-form-field>
       </div>
@@ -125,7 +128,7 @@
       </div>
     </section>
 
-    <!-- Seção: Dados de Frota (apenas para frotistas) -->
+    <!-- SeÃ§Ã£o: Dados de Frota (apenas para frotistas) -->
     @if (ehFrotista()) {
       <mat-divider />
       <section class="form-section">
@@ -135,18 +138,18 @@
         </h2>
         <div class="form-row form-row-2">
           <mat-form-field appearance="outline">
-            <mat-label>Quantidade de Veículos</mat-label>
+            <mat-label>Quantidade de VeÃ­culos</mat-label>
             <input matInput type="number" formControlName="quantidadeVeiculos" min="1" id="campo-qt-veiculos" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Setor de Atuação</mat-label>
-            <input matInput formControlName="setorAtuacao" placeholder="Ex: Transporte, Agronegócio..." id="campo-setor" />
+            <mat-label>Setor de AtuaÃ§Ã£o</mat-label>
+            <input matInput formControlName="setorAtuacao" placeholder="Ex: Transporte, AgronegÃ³cio..." id="campo-setor" />
           </mat-form-field>
         </div>
       </section>
     }
 
-    <!-- Ações -->
+    <!-- AÃ§Ãµes -->
     <div class="page-actions">
       <button type="button" class="btn-voltar" (click)="voltar()">
         <mat-icon>arrow_back</mat-icon>
@@ -159,3 +162,4 @@
     </div>
   </form>
 </div>
+
